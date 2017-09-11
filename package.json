@@ -1,16 +1,13 @@
 {
   "name": "unity-npm-utils",
   "scope": "ape",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "utils for using npm as a package manager for unity",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/beatthat/unity-npm-utils.git"
   },
   "main": "./lib/unity-npm-utils",
-  "bin": {
-      "install_plugin": "./bin/install_plugin"
-  },
   "files": [
     "index.js",
     "scripts",
