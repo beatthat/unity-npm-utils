@@ -1,0 +1,35 @@
+{
+  "name": "unity-npm-utils",
+  "scope": "ape",
+  "version": "0.0.1",
+  "description": "utils for using npm as a package manager for unity",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beatthat/unity-npm-utils.git"
+  },
+  "main": "./lib/unity-npm-utils",
+  "bin": {
+      "install_plugin": "./bin/install_plugin"
+  },
+  "files": [
+    "index.js",
+    "scripts",
+    "src"
+  ],
+  "author": "larrykirschner@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/beatthat/unity-npm-utils/issues"
+  },
+  "homepage": "https://github.com/beatthat/unity-npm-utils",
+  "scripts": {
+    "pub:tag": "git add -A && git commit -m ${npm_package_version} && git tag -a ${npm_package_version} -m ${npm_package_version} && git push origin master && git push origin ${npm_package_version}"
+  },
+  "dependencies": {
+    "ncp": "^2.0.0",
+    "mkdirp": "^0.5.1"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
