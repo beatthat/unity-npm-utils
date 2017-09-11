@@ -1,7 +1,7 @@
 {
   "name": "unity-npm-utils",
   "scope": "ape",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "utils for using npm as a package manager for unity",
   "repository": {
     "type": "git",
@@ -9,9 +9,7 @@
   },
   "main": "./lib/unity-npm-utils",
   "files": [
-    "index.js",
-    "scripts",
-    "src"
+    "lib"
   ],
   "author": "larrykirschner@gmail.com",
   "license": "MIT",
