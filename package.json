@@ -1,7 +1,7 @@
 {
   "name": "unity-npm-utils",
   "scope": "ape",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "utils for using npm as a package manager for unity",
   "repository": {
     "type": "git",
@@ -23,7 +23,6 @@
   "dependencies": {
     "ncp": "^2.0.0",
     "mkdirp": "^0.5.1",
-    "del": "^3.0.0",
     "rimraf": "^2.6.2"
   },
   "engines": {
