@@ -1,13 +1,16 @@
 {
   "name": "unity-npm-utils",
   "scope": "ape",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "utils for using npm as a package manager for unity",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/beatthat/unity-npm-utils.git"
   },
   "main": "./lib/unity-npm-utils",
+  "bin": {
+    "overwrite:unity2module": "./bin/overwrite-unity2module"
+  },
   "files": [
     "lib"
   ],
