@@ -1,7 +1,7 @@
 {
     "name": "unity-npm-utils",
     "scope": "ape",
-    "version": "0.0.23",
+    "version": "0.0.24",
     "description": "utils for using npm as a package manager for unity",
     "repository": {
         "type": "git",
@@ -26,6 +26,7 @@
         "pub:tag": "git add -A && git commit -m ${npm_package_version} && git tag -a ${npm_package_version} -m ${npm_package_version} && git push origin master && git push origin ${npm_package_version}"
     },
     "dependencies": {
+        "git-clone-or-pull": "^3.0.0",
         "home-or-tmp": "^3.0.0",
         "mkdirp": "^0.5.1",
         "ncp": "^2.0.0",
