@@ -20,4 +20,10 @@ const unityRoot = path.join(thisDir, '..', '..', '..')
 const pkgModuleRoot = path.join(thisDir, '..', '..', pkgParts[pkgParts.length - 1]);
 
 
-unpm.moduleUpdateWorkingCopy(pkgModuleRoot);
+unpm.moduleUpdateWorkingCopy(pkgModuleRoot)
+.then((updateWCres) => {
+    console.log('moduleUpdateWorkingCopy succeeded!');
+})
+.catch((err) => {
+    console.log('failed with err: %j', err);
+});
