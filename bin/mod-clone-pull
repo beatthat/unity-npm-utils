@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+"use strict";
+const path = require('path');
+const fs = require('fs');
+const thisDir = __dirname; //path.join(path.dirname(fs.realpathSync(__filename)));
+// const lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
+
+if(process.argv.length < 3) {
+    console.log('usage: mod-clone-pull package_name');
+    process.exit(1);
+}
+
+const pkgPath = process.argv[2];
+const pkgParts = pkgPath.split('/');
+const pkgModuleRoot = path.join(thisDir, '..', '..', pkgParts[pkgParts.length - 1]);
+
+
+unpm.modCloneOrPull(pkgModuleRoot)
+.then((updateWCres) => {
+    console.log('modCloneOrPull succeeded!');
+})
+.catch((err) => {
+    console.log('failed with err: %j', err);
+});

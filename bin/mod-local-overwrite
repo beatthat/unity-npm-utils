@@ -8,7 +8,7 @@ const thisDir = __dirname; //path.join(path.dirname(fs.realpathSync(__filename))
 const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
 
 if(process.argv.length < 3) {
-    console.log('usage: overwritemodule-local package_name');
+    console.log('usage: mod-local-overwrite package_name');
     process.exit(1);
 }
 

@@ -1,0 +1,18 @@
+{
+    "name": "tests",
+    "version": "0.0.1",
+    "description": "",
+    "author": "",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf node_modules package-lock.json yarn.lock Library Temp Assets",
+        "cp:test2src": "node ./scripts/cp-test2src.js",
+        "mod:local:overwrite": "node ./scripts/overwrite-test2src.js",
+        "mod:clone:pull": "./node_modules/.bin/mod-clone-pull",
+        "mod:clone:link": "./node_modules/.bin/mod-clone-link"
+    },
+    "dependencies": {
+        "unity-npm-utils": "../unity-npm-utils-0.0.28.tgz",
+        "safe-refs": "github:beatthat/safe-refs#semver:^0.0.2"
+    }
+}

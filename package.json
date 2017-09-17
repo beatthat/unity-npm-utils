@@ -9,8 +9,9 @@
     },
     "main": "./lib/unity-npm-utils",
     "bin": {
-        "overwritemodule-local": "./bin/overwritemodule-local",
-        "overwritemodule-updatewc": "./bin/overwritemodule-updatewc"
+        "mod-local-overwrite": "./bin/mod-local-overwrite",
+        "mod-clone-pull": "./bin/mod-clone-pull",
+        "mod-clone-link": "./bin/mod-clone-link"
     },
     "files": [
         "lib",
@@ -23,13 +24,19 @@
     },
     "homepage": "https://github.com/beatthat/unity-npm-utils",
     "scripts": {
+        "preinstall:test": "rm -f *.tgz",
+        "install:test": "npm pack && cd test && npm run clean && npm install",
+        "clean": "rm -f *.tgz && cd test && npm run clean",
+        "prepub:tag": "npm run clean",
         "pub:tag": "git add -A && git commit -m ${npm_package_version} && git tag -a ${npm_package_version} -m ${npm_package_version} && git push origin master && git push origin ${npm_package_version}"
     },
     "dependencies": {
-        "git-clone-or-pull": "^3.0.0",
+        "git-clone-or-pull": "beatthat/node-git-clone-or-pull#semver:^3.0.1",
+        "child-process": "^1.0.2",
         "home-or-tmp": "^3.0.0",
         "mkdirp": "^0.5.1",
         "ncp": "^2.0.0",
+        "nodegit": "0.20.2",
         "rimraf": "^2.6.2"
     },
     "engines": {

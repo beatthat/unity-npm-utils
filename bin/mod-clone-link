@@ -8,21 +8,18 @@ const thisDir = __dirname; //path.join(path.dirname(fs.realpathSync(__filename))
 const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
 
 if(process.argv.length < 3) {
-    console.log('usage: overwritemodule-local package_name');
+    console.log('usage: mod-clone-pull package_name');
     process.exit(1);
 }
 
 const pkgPath = process.argv[2];
 const pkgParts = pkgPath.split('/');
-
-const unityRoot = path.join(thisDir, '..', '..', '..')
-
 const pkgModuleRoot = path.join(thisDir, '..', '..', pkgParts[pkgParts.length - 1]);
 
 
-unpm.moduleUpdateWorkingCopy(pkgModuleRoot)
+unpm.modCloneLink(pkgModuleRoot)
 .then((updateWCres) => {
-    console.log('moduleUpdateWorkingCopy succeeded!');
+    console.log('modCloneLink succeeded!');
 })
 .catch((err) => {
     console.log('failed with err: %j', err);
