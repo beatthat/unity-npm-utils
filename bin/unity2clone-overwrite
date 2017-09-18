@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+"use strict";
+const path = require('path');
+const fs = require('fs');
+const thisDir = __dirname; //path.join(path.dirname(fs.realpathSync(__filename)));
+// const lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
+
+if(process.argv.length < 3) {
+    console.log('usage: unity2clone-overwrite package_name');
+    process.exit(1);
+}
+
+const pkgName = process.argv[2];
+
+const unityRoot = path.join(thisDir, '..', '..', '..');
+
+unpm.copyUnity2LinkedClone(unityRoot, pkgName, { overwrite : true, verbose: true }, (err) => {
+    if(err) {
+        console.log('unity2clone-overwrite failed with error: %j', err);
+        process.exit(1);
+        return;
+    }
+
+    console.log('unity2clone-overwrite succeeded');
+});

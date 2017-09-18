@@ -12,16 +12,10 @@ if(process.argv.length < 3) {
     process.exit(1);
 }
 
-const pkgPath = process.argv[2];
-const pkgParts = pkgPath.split('/');
+const pkgName = process.argv[2];
 
 const unityRoot = path.join(thisDir, '..', '..', '..')
 
-const pkgModuleRoot = path.join(thisDir, '..', '..', pkgParts[pkgParts.length - 1]);
+const options = { overwrite: true }
 
-const options = {
-    package_name: pkgParts[pkgParts.length - 1],
-    package_scope: pkgParts.length > 1? pkgParts[0]: undefined
-}
-
-console.log('unpm.syncPlugin2Src(%j, %j, %j)', unityRoot, pkgModuleRoot, options);
+unpm.modCopyFromUnity2Pkg(unityRoot, pkgName, options);
