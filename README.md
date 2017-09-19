@@ -1,8 +1,8 @@
-# APE - Package Manager for Unity
+# Unity NPM Utils
 
-**Description**:  APE helps you create, integrate, and share interdependent Unity packages.
+**Unity NPM Utils helps you create, integrate, and share interdependent Unity packages**
 
-The Unity Asset Store is a great tool but as a package manager, it has limitations, most notably, it provides no mechanism for one package to declare dependencies on another.
+The Unity Asset Store is a great resource but as a package manager, it has limitations. Notably, it provides no mechanism for one package to declare dependencies on another.
 
 A practical effect of this is that the Unity ecosystem doesn't create and share small, single-task focused, interdependent code modules the way other language/platform communities do, and so the Unity community misses out on that engine of innovation and progress.
 
