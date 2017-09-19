@@ -13,7 +13,7 @@
         "mod:clone:link": "./node_modules/.bin/mod-clone-link"
     },
     "dependencies": {
-        "unity-npm-utils": "../unity-npm-utils-0.0.30.tgz",
+        "unity-npm-utils": "../unity-npm-utils-0.0.31.tgz",
         "safe-refs": "github:beatthat/safe-refs#semver:^0.0.2"
     }
 }
