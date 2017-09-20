@@ -8,12 +8,11 @@
         "clean": "rm -rf node_modules package-lock.json yarn.lock Library Temp Assets",
         "unity2clone:overwrite": "./node_modules/.bin/unity2clone-overwrite",
         "unity2pkg:overwrite": "./node_modules/.bin/unity2pkg-overwrite",
-        "mod:unity2pkg:overwrite": "./node_modules/.bin/mod-unity2pkg-overwrite",
         "mod:clone:pull": "./node_modules/.bin/mod-clone-pull",
         "mod:clone:link": "./node_modules/.bin/mod-clone-link"
     },
     "dependencies": {
-        "unity-npm-utils": "../unity-npm-utils-0.0.31.tgz",
+        "unity-npm-utils": "../unity-npm-utils-latest.tgz",
         "safe-refs": "github:beatthat/safe-refs#semver:^0.0.2"
     }
 }

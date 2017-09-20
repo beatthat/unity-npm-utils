@@ -6,12 +6,14 @@ The Unity Asset Store is a great resource but as a package manager, it has limit
 
 A practical effect of this is that the Unity ecosystem doesn't create and share small, single-task focused, interdependent code modules the way other language/platform communities do, and so the Unity community misses out on that engine of innovation and progress.
 
-Ape leverages the mature and powerful Node JS package manager, npm, to provide Unity-friendly tools for creating, integrating, editing and sharing Unity packages.
+Ape leverages the mature and powerful Node JS package manager, npm, as a basis to provide Unity-friendly tools for creating, integrating, editing and sharing Unity packages.
 
 ## Dependencies
 
 Requires npm
 
+
+##
 ## Installation
 
 Detailed instructions on how to install, configure, and get the project running.

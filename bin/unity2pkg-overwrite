@@ -18,4 +18,4 @@ const unityRoot = path.join(thisDir, '..', '..', '..')
 
 const options = { overwrite: true }
 
-unpm.modCopyFromUnity2Pkg(unityRoot, pkgName, options);
+unpm.copyFromUnity2Pkg(unityRoot, pkgName, options);

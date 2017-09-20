@@ -2,9 +2,7 @@
 
 "use strict";
 const path = require('path');
-const fs = require('fs');
-const thisDir = __dirname; //path.join(path.dirname(fs.realpathSync(__filename)));
-// const lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+const thisDir = __dirname;
 const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
 
 if(process.argv.length < 3) {
