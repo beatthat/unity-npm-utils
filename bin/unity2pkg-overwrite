@@ -8,7 +8,7 @@ const thisDir = __dirname; //path.join(path.dirname(fs.realpathSync(__filename))
 const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
 
 if(process.argv.length < 3) {
-    console.log('usage: mod-local-overwrite package_name');
+    console.log('usage: unity2pkg-overwrite package_name');
     process.exit(1);
 }
 
@@ -16,6 +16,12 @@ const pkgName = process.argv[2];
 
 const unityRoot = path.join(thisDir, '..', '..', '..')
 
-const options = { overwrite: true }
+unpm.copyFromUnity2Pkg(unityRoot, pkgName, { overwrite : true, verbose: true }, (err, info) => {
+    if(err) {
+        console.log('unity2pkg-overwrite failed with error: %j', err);
+        process.exit(1);
+        return;
+    }
 
-unpm.copyFromUnity2Pkg(unityRoot, pkgName, options);
+    console.log('unity2pkg-overwrite succeeded');
+});
