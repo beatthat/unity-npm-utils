@@ -13,6 +13,6 @@
     },
     "dependencies": {
         "unity-npm-utils": "../unity-npm-utils-latest.tgz",
-        "safe-refs": "github:beatthat/safe-refs#semver:^0.0.2"
+        "safe-refs": "github:beatthat/safe-refs#semver:^0.0.3"
     }
 }
