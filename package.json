@@ -1,7 +1,7 @@
 {
     "name": "unity-npm-utils",
     "scope": "ape",
-    "version": "0.0.39",
+    "version": "0.0.40",
     "description": "utils for using npm as a package manager for unity",
     "repository": {
         "type": "git",
@@ -25,22 +25,31 @@
     },
     "homepage": "https://github.com/beatthat/unity-npm-utils",
     "scripts": {
-        "preinstall:test": "rm -f *.tgz",
-        "install:test": "npm pack && cp ${npm_package_name}-${npm_package_version}.tgz ${npm_package_name}-latest.tgz && cd test && npm run clean && npm install",
+        "test": "./node_modules/.bin/mocha --reporter spec",
+        "pretest:unityproject:install": "rm -f *.tgz",
+        "test:unityproject:install": "npm pack && cp ${npm_package_name}-${npm_package_version}.tgz ${npm_package_name}-latest.tgz && cd test_unity_project && npm run clean && npm install",
         "clean": "rm -f *.tgz && cd test && npm run clean",
         "prepub:tag": "npm run clean",
         "pub:tag": "git add -A && git commit -m ${npm_package_version} && git tag -a ${npm_package_version} -m ${npm_package_version} && git push origin master && git push origin ${npm_package_version}"
     },
     "dependencies": {
-        "git-clone-or-pull": "^3.1.0",
         "child-process": "^1.0.2",
+        "git-clone-or-pull": "^3.1.0",
         "home-or-tmp": "^3.0.0",
         "mkdirp": "^0.5.1",
         "ncp": "^2.0.0",
         "nodegit": "0.20.2",
-        "rimraf": "^2.6.2"
+        "request": "^2.82.0",
+        "rimraf": "^2.6.2",
+        "semver": "^5.4.1",
+        "tmp": "0.0.33",
+        "unzip": "^0.1.11"
     },
     "engines": {
         "node": "*"
+    },
+    "devDependencies": {
+        "chai": "^4.1.2",
+        "mocha": "^3.5.3"
     }
 }
