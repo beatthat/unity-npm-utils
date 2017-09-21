@@ -4,40 +4,152 @@ const path = require('path');
 const fs = require('fs');
 const tmp = require('tmp');
 
+tmp.setGracefulCleanup();
+
+/**
+ * @param {function(err, installPath)} callback
+ * @private
+ */
+const installUnityPackageTemplateToTemp = (callback) => {
+    const promise = new Promise((resolve, reject) => {
+        tmp.dir((tmpDirErr, tmpDir) => {
+            const installPath = path.join(tmpDir, 'unpm-testpackage');
+
+            unpm.unityPackage.install(installPath, {}, (err) => {
+
+                if (err) {
+                    return reject(new Error(err));
+                }
+
+                return resolve(installPath);
+            });
+        });
+    });
+
+    if (!callback) {
+        return promise;
+    }
+
+    promise.then((pRes) => {
+            return callback(null, pRes);
+        })
+        .catch((pErr) => {
+            return callback(pErr);
+        })
+
+}
+
+const readPackage = (pkgPath) => {
+    // don't use require because it will cache and we're here editting package.json
+    return JSON.parse(fs.readFileSync(path.join(pkgPath, 'package.json')));
+}
+
 describe("Unity NPM Utils", () => {
 
     describe("Unity Package", () => {
 
         describe("Install", () => {
-            it("creates package json", function(done) {
+            var pkgPath = null;
+
+            before(function(done) {
                 this.timeout(10000);
 
+                installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
+                    if (installErr) {
+                        return done(installErr);
+                    }
 
-                tmp.dir((tmpDirErr, tmpDir, tmpDirCleanup) => {
-                    // TODO: how do you get exec 'after' in mocha to tmpDirCleanup()?
-
-                    const installPath = path.join(tmpDir, 'unpm-testpackage');
-
-                    unpm.unityPackage.install(installPath, {}, (err) => {
-
-                        console.log('install returned!');
-
-                        if(err) {
-                            return done(new Error(err));
-                        }
-
-                        const packageJsonPath = path.join(installPath, 'package.json');
-
-                        expect(fs.existsSync(packageJsonPath),
-                            `package.json should exist in install path ${installPath}`).to.equal(true);
-
-
-                        return done();
-                    });
+                    pkgPath = tmpInstallPath;
+                    done();
                 });
-
             });
+
+            it("installs template files", () => {
+                const packageJsonPath = path.join(pkgPath, 'package.json');
+
+                expect(fs.existsSync(packageJsonPath),
+                    `package.json should exist in install path ${pkgPath}`).to.equal(true);
+            });
+
+            it("sets initial version to 0.0.1", () => {
+                const pkg = readPackage(pkgPath);
+                expect(pkg.version).to.equal('0.0.1');
+            });
+
+
         });
+
+        describe("Increment Version", () => {
+            var pkgPath = null;
+
+            beforeEach(function(done) {
+                this.timeout(10000);
+
+                installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
+                    if (installErr) {
+                        return done(installErr);
+                    }
+
+                    pkgPath = tmpInstallPath;
+                    done();
+                });
+            });
+
+            it("accepts package OBJECT as arg", function(done) {
+                this.timeout(10000);
+
+                const pkg = readPackage(pkgPath);
+
+                unpm.unityPackage.incrementVersion(pkg, (err, pkgAfter) => {
+                    if(err) { return done(err); }
+                    expect(pkg.version, 'should modify only copy of package passed to callback').to.equal('0.0.1');
+                    expect(pkgAfter.version).to.equal('0.0.2');
+                    done();
+                });
+            });
+
+            it("accepts package PATH as arg", function(done) {
+                this.timeout(10000);
+
+                unpm.unityPackage.incrementVersion(pkgPath, (err, pkgAfter) => {
+                    if(err) { return done(err); }
+                    expect(pkgAfter.version).to.equal('0.0.2');
+                    done();
+                });
+            });
+
+            it("writes changes to package.json when PATH as arg", function(done) {
+                this.timeout(10000);
+
+                unpm.unityPackage.incrementVersion(pkgPath, (err, pkgAfter) => {
+                    if(err) { return done(err); }
+                    const pkgWritten = readPackage(pkgPath);
+                    expect(pkgWritten.version).to.equal('0.0.2');
+                    done();
+                });
+            });
+
+            it("increments patch version by default", function(done) {
+                this.timeout(10000);
+
+                unpm.unityPackage.incrementVersion(pkgPath, (err, pkgAfter) => {
+                    if(err) { return done(err); }
+                    expect(pkgAfter.version, 'written package.json version should increment').to.equal('0.0.2');
+                    done();
+                });
+            });
+
+            it("increments semver release type passed via options ", function(done) {
+                this.timeout(10000);
+
+                const pkg = readPackage(pkgPath);
+
+                unpm.unityPackage.incrementVersion(pkg, { release_type: 'minor'}, (err, pkgAfter) => {
+                    expect(pkgAfter.version, "accepts release_type 'minor'").to.equal('0.1.0');
+                    done();
+                });
+            });
+        })
     });
 
 });
