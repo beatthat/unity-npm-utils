@@ -5,72 +5,19 @@ const fs = require('fs');
 const tmp = require('tmp');
 const spawn = require('child_process').spawn;
 const mlog = require('mocha-logger');
+const h = require('./test-helpers.js');
 
 tmp.setGracefulCleanup();
 
-/**
- * @param options.package_name - if passed will set the package name
- * @param {function(err, installPath)} callback
- * @private
- */
-const installUnityPackageTemplateToTemp = (options, callback) => {
-    if (typeof options === 'function') {
-        callback = options;
-        options = {};
-    }
+describe("unity-npm-utils.unityPackage", () => {
 
-    options = options || {};
-
-    const promise = new Promise((resolve, reject) => {
-        tmp.dir((tmpDirErr, tmpDir) => {
-            const installPath = path.join(tmpDir, 'unpm-testpackage');
-
-            unpm.unityPackage.installTemplate(installPath, {}, (err) => {
-
-                if (err) {
-                    return reject(new Error(err));
-                }
-
-                if (!options.package_name) {
-                    return resolve(installPath);
-                }
-
-                unpm.unityPackage.setPackageName(installPath, {
-                        package_name: options.package_name,
-                        verbose: false
-                    },
-                    (setNameErr) => {
-                        if (setNameErr) {
-                            return reject(setNameErr);
-                        }
-                        return resolve(installPath);
-                    });
-            });
-        });
-    });
-
-    if (!callback) {
-        return promise;
-    }
-    promise.then(pr => callback(null, pr)).catch(pe => callback(pe));
-
-}
-
-const readPackage = (pkgPath) => {
-    // don't use require because it will cache and we're here editting package.json
-    return JSON.parse(fs.readFileSync(path.join(pkgPath, 'package.json')));
-}
-
-
-describe("Unity Package", () => {
-
-    describe("Installs Template", () => {
+    describe("installTemplate - installs a the unity-package template to an empty directory", () => {
         var pkgPath = null;
 
         before(function(done) {
             this.timeout(10000);
 
-            installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
+            h.installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
                 if (installErr) {
                     return done(installErr);
                 }
@@ -88,19 +35,19 @@ describe("Unity Package", () => {
         });
 
         it("sets initial version to 0.0.1", () => {
-            const pkg = readPackage(pkgPath);
+            const pkg = h.readPackage(pkgPath);
             expect(pkg.version).to.equal('0.0.1');
         });
 
     });
 
-    describe("Increments Version", () => {
+    describe("incrementVersion - incrememts the version for a unity package", () => {
         var pkgPath = null;
 
         beforeEach(function(done) {
             this.timeout(10000);
 
-            installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
+            h.installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
                 if (installErr) {
                     return done(installErr);
                 }
@@ -113,7 +60,7 @@ describe("Unity Package", () => {
         it("accepts package OBJECT as arg", function(done) {
             this.timeout(10000);
 
-            const pkg = readPackage(pkgPath);
+            const pkg = h.readPackage(pkgPath);
 
             unpm.unityPackage.incrementVersion(pkg, (err, pkgAfter) => {
                 if (err) {
@@ -144,7 +91,7 @@ describe("Unity Package", () => {
                 if (err) {
                     return done(err);
                 }
-                const pkgWritten = readPackage(pkgPath);
+                const pkgWritten = h.readPackage(pkgPath);
                 expect(pkgWritten.version).to.equal('0.0.2');
                 done();
             });
@@ -165,7 +112,7 @@ describe("Unity Package", () => {
         it("increments semver release type passed via options.release_type", function(done) {
             this.timeout(10000);
 
-            const pkg = readPackage(pkgPath);
+            const pkg = h.readPackage(pkgPath);
 
             unpm.unityPackage.incrementVersion(pkg, {
                 release_type: 'minor'
@@ -184,13 +131,13 @@ describe("Unity Package", () => {
     });
 
 
-    describe("Sets Package Name", () => {
+    describe("setPackageName - sets package.name and updates all name-dependent aspects of a unity package", () => {
         var pkgPath = null;
 
         beforeEach(function(done) {
             this.timeout(10000);
 
-            installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
+            h.installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
                 if (installErr) {
                     return done(installErr);
                 }
@@ -212,7 +159,7 @@ describe("Unity Package", () => {
                 if (err) {
                     return done(err);
                 }
-                const pkgWritten = readPackage(pkgPath);
+                const pkgWritten = h.readPackage(pkgPath);
                 expect(pkgWritten.name).to.equal(newPkgName);
                 done();
             });
@@ -284,87 +231,6 @@ describe("Unity Package", () => {
         });
 
     });
-
-
-
-
-    describe("Installs to its own Unity project (for editting/testing in Unity)", () => {
-        var pkgPath = null;
-
-        const pkgNameFoo = "my-pkg-foo";
-        const srcFiles = [{
-                name: 'Foo.cs',
-                content: 'public class Foo {}'
-            },
-            {
-                name: 'Bar.cs',
-                content: 'public class Bar {} '
-            }
-        ];
-
-        before(function(done) {
-            this.timeout(90000);
-
-            installUnityPackageTemplateToTemp({
-                package_name: pkgNameFoo
-            }, (installErr, tmpInstallPath) => {
-                if (installErr) {
-                    return done(installErr);
-                }
-
-                pkgPath = tmpInstallPath;
-
-                unpm.unityPackage.addSrcFiles(pkgPath, srcFiles, (addErr) => {
-                    if (addErr) {
-                        return done(addErr);
-                    }
-
-                    const cmd = 'npm run install:test';
-                    const npmRunInstallTest = spawn(cmd, {
-                        // stdio: 'inherit',
-                        shell: true,
-                        cwd: pkgPath
-                    });
-
-                    const log = path.join(pkgPath, 'npm-cmd.log');
-                    logStream = fs.createWriteStream(log, {
-                        flags: 'a'
-                    });
-
-                    mlog.log(`running '${cmd}'...`);
-                    mlog.log(`view logs at ${log}`);
-                    mlog.pending('this may take a while...');
-
-                    npmRunInstallTest.stdout.pipe(logStream);
-                    npmRunInstallTest.stderr.pipe(logStream);
-
-                    npmRunInstallTest.on('exit', (code, signal) => {
-
-                        if (code !== 0 || signal) {
-                            return done(new Error(`npm run install:test failed with code ${code} and signal ${signal}`));
-                        }
-                        return done();
-                    });
-                });
-
-
-            });
-        });
-
-        it("installs under Plugins by default", function(done) {
-
-            const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgNameFoo);
-
-            expect(fs.existsSync(unityPkgPath), `Plugin folder name matches package name ${unityPkgPath}`).to.equal(true);
-
-            return done();
-        });
-
-    })
-
-
-
-
 
 
 });
