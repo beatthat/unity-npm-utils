@@ -9,7 +9,7 @@ const h = require('./test-helpers.js');
 
 tmp.setGracefulCleanup();
 
-describe("Unity Package - Scripts", () => {
+describe("unity-npm-utils - unity-package npm scripts", () => {
 
     describe("'npm run install:test' - installs a package to its own 'test' Unity project for editting", () => {
         var pkgPath = null;
