@@ -67,7 +67,7 @@ describe("Unity Package - Scripts", () => {
         var pkgPath = null;
 
         const pkgNameFoo = "my-pkg-foo";
-        const pkgBefore = null;
+        var pkgBefore = null;
 
         beforeEach(function(done) {
             this.timeout(10000);
@@ -83,42 +83,14 @@ describe("Unity Package - Scripts", () => {
 
                 pkgBefore = h.readPackage(pkgPath);
 
-                done();
+                h.runPkgCmd('npm run template:update', pkgPath, (cmdErr) => {
+                    return done(cmdErr);
+                });
             });
         });
 
         it("appends all template scripts to main package scripts", function(done) {
-
-            // const cmd = 'npm run install:test';
-            // const cmdProc = spawn(cmd, {
-            //     // stdio: 'inherit',
-            //     shell: true,
-            //     cwd: pkgPath
-            // });
-            //
-            // const log = path.join(pkgPath, 'npm-cmd.log');
-            // logStream = fs.createWriteStream(log, {
-            //     flags: 'a'
-            // });
-            //
-            // mlog.log(`running '${cmd}'...`);
-            // mlog.log(`view logs at ${log}`);
-            // mlog.pending('this may take a while...');
-            //
-            // cmdProc.stdout.pipe(logStream);
-            // cmdProc.stderr.pipe(logStream);
-            //
-            // cmdProc.on('exit', (code, signal) => {
-            //
-            //     if (code !== 0 || signal) {
-            //         return done(new Error(`${cmd} failed with code ${code} and signal ${signal}`));
-            //     }
-            //     return done();
-            // });
-            //
-            //
-            //
-            // return done();
+            done(new Error('not implemented'))
         });
 
     })

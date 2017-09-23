@@ -232,5 +232,85 @@ describe("unity-npm-utils.unityPackage", () => {
 
     });
 
+    describe('transformPackage - transforms a package json with options to read before and/or write after transform', () => {
+        var pkgPath = null;
+
+        const pkgNameFoo = "my-pkg-foo";
+
+        beforeEach(function(done) {
+            this.timeout(10000);
+
+            h.installUnityPackageTemplateToTemp({
+                package_name: pkgNameFoo
+            }, (installErr, tmpInstallPath) => {
+                if (installErr) {
+                    return done(installErr);
+                }
+
+                pkgPath = tmpInstallPath;
+
+                done();
+            });
+        });
+
+        it('can read -> transform -> write a package', function(done) {
+
+            unpm.transformPackage({
+                package_read_path: pkgPath,
+                package_write_path: pkgPath,
+                transform: (pkg, callback) => {
+                    pkg.scripts = { foo: 'bar' };
+                    callback(null, pkg);
+                }
+            },
+            (err) => {
+                if(err) {
+                    return done(err);
+                }
+
+                const pkgAfter = h.readPackage(pkgPath);
+
+                expect(pkgAfter.scripts.foo).to.equal('bar');
+
+                return done();
+            });
+        });
+
+        it('returns a promise when no callback passed', function(done) {
+
+            unpm.transformPackage({
+                package_read_path: pkgPath,
+                package_write_path: pkgPath,
+                transform: (pkg, callback) => {
+                    pkg.scripts = { foo: 'bar' };
+                    callback(null, pkg);
+                }
+            })
+            .then(p => {
+                const pkgAfter = h.readPackage(pkgPath);
+
+                expect(pkgAfter.scripts.foo).to.equal('bar');
+
+                return done();
+            })
+            .catch(err => done(err))
+        });
+    });
+
+    describe.skip("updateTemplate - updates scripts and template files for an existing unity package", () => {
+        var pkgPath = null;
+
+        const pkgNameFoo = "my-pkg-foo";
+        var pkgBefore = null;
+
+
+
+        it("appends all template scripts to main package scripts", function(done) {
+            done(new Error('not implemented'))
+        });
+
+
+    });
+
 
 });
