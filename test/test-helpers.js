@@ -87,11 +87,11 @@ const installUnityPackageTemplateToTemp = (options, callback) => {
 
 }
 
-const readPackage = (pkgPath) => {
+const readPackageSync = (pkgPath) => {
     // don't use require because it will cache and we're here editting package.json
     return JSON.parse(fs.readFileSync(path.join(pkgPath, 'package.json')));
 }
 
 exports.runPkgCmd = runPkgCmd;
 exports.installUnityPackageTemplateToTemp = installUnityPackageTemplateToTemp;
-exports.readPackage = readPackage;
+exports.readPackageSync = readPackageSync;

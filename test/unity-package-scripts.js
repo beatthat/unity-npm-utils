@@ -81,7 +81,7 @@ describe("unity-npm-utils - unity-package npm scripts", () => {
 
                 pkgPath = tmpInstallPath;
 
-                pkgBefore = h.readPackage(pkgPath);
+                pkgBefore = h.readPackageSync(pkgPath);
 
                 h.runPkgCmd('npm run template:update', pkgPath, (cmdErr) => {
                     return done(cmdErr);

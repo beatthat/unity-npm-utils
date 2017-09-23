@@ -35,7 +35,7 @@ describe("unity-npm-utils.unityPackage", () => {
         });
 
         it("sets initial version to 0.0.1", () => {
-            const pkg = h.readPackage(pkgPath);
+            const pkg = h.readPackageSync(pkgPath);
             expect(pkg.version).to.equal('0.0.1');
         });
 
@@ -70,7 +70,7 @@ describe("unity-npm-utils.unityPackage", () => {
                 if (err) {
                     return done(err);
                 }
-                const pkgWritten = h.readPackage(pkgPath);
+                const pkgWritten = h.readPackageSync(pkgPath);
                 expect(pkgWritten.name).to.equal(newPkgName);
                 done();
             });
@@ -144,19 +144,159 @@ describe("unity-npm-utils.unityPackage", () => {
     });
 
 
-    describe.skip("updateTemplate - updates scripts and template files for an existing unity package", () => {
-        var pkgPath = null;
+    describe("updateTemplate - updates scripts and template files for an existing unity package", () => {
 
         const pkgNameFoo = "my-pkg-foo";
-        var pkgBefore = null;
+        var pkgPath = null;
+        var pkgDist = null;
+        var pkgDistScriptNames = null;
 
+        beforeEach(function(done) {
+            this.timeout(10000);
 
+            h.installUnityPackageTemplateToTemp({
+                package_name: pkgNameFoo
+            }, (installErr, tmpInstallPath) => {
+                if (installErr) {
+                    return done(installErr);
+                }
 
-        it("appends all template scripts to main package scripts", function(done) {
-            done(new Error('not implemented'))
+                pkgPath = tmpInstallPath;
+
+                // console.log('packagepath=%j', pkgPath);
+
+                pkgDist = h.readPackageSync(pkgPath);
+                distScriptNames = Object.getOwnPropertyNames(pkgDist.scripts);
+
+                // rename all scripts
+                unpm.transformPackage({
+                    package_read_path: pkgPath,
+                    package_write_path: pkgPath,
+                    transform: (p, cb) => {
+                        p.scripts = {};
+                        cb(null, p);
+                    }
+                }, (e, p) => {
+                    return done(e);
+                })
+            });
         });
 
+        it("uses a package template that includes scripts", function(done) {
+            expect(distScriptNames.length, 'dist template package includes scripts').to.be.gt(0);
+            done();
+        })
 
+        it("adds all template scripts to main package scripts", function(done) {
+            this.timeout(10000);
+
+            const pkgNoScripts = h.readPackageSync(pkgPath);
+
+            expect(Object.getOwnPropertyNames(pkgNoScripts.scripts).length, 'given scripts have been cleared to an empty object').to.equal(0);
+
+            unpm.unityPackage.updateTemplate(pkgPath)
+            .then(p => {
+                const pkgAfter = h.readPackageSync(pkgPath);
+                distScriptNames.forEach(n => {
+                    expect(pkgAfter.scripts[n]).to.equal(pkgDist.scripts[n]);
+                });
+
+                done();
+            })
+            .catch(e => done(e));
+        });
+
+        it('preserves the name of the pre-update package', function done() {
+            this.timeout(10000);
+
+            const nameToKeep = "some-weird-name";
+
+            unpm.unityPackage.setPackageName(pkgPath, { package_name: nameToKeep }, (ne) => {
+                if(ne) { return done(ne); }
+
+                unpm.unityPackage.updateTemplate(pkgPath)
+                .then(p => {
+                    const pkgAfter = h.readPackageSync(pkgPath);
+
+                    expect(pkgAfter.name,
+                        'should preserve name of the pre-update package'
+                    ).to.equal(nameToKeep)
+
+                    done();
+                })
+                .catch(e => done(e));
+            });
+
+        })
+
+        // it('preserves the version of the pre-update package', function done() {
+        //     this.timeout(10000);
+        //
+        //     const versionToKeep = "6.2.1";
+        //
+        //     unpm.unityPackage.(pkgPath, { package_name: nameToKeep }, (ne) => {
+        //         if(ne) { return done(ne); }
+        //
+        //         unpm.unityPackage.updateTemplate(pkgPath)
+        //         .then(p => {
+        //             const pkgAfter = h.readPackageSync(pkgPath);
+        //
+        //             expect(pkgAfter.name,
+        //                 'should preserve name of the pre-update package'
+        //             ).to.equal(nameToKeep)
+        //
+        //             done();
+        //         })
+        //         .catch(e => done(e));
+        //     });
+        //
+        // })
+
+        it("combines scripts previously defined in the package with new scripts from template, preferring the template version when there is overlap", function(done) {
+            this.timeout(10000);
+
+            const pkgNoScripts = h.readPackageSync(pkgPath);
+            var oldScripts = { old_1: 'val 1', old_2: 'val 2' };
+
+            // rename all scripts
+            unpm.transformPackage({
+                package_read_path: pkgPath,
+                package_write_path: pkgPath,
+                transform: (p, cb) => {
+                    p.scripts = {
+                        ...oldScripts,
+                        [distScriptNames[0]]: 'this val should be overwritten with template val for script'
+                    };
+                    cb(null, p);
+                }
+            }, (e, p) => {
+                if(e) {
+                    return done(e);
+                }
+
+                unpm.unityPackage.updateTemplate(pkgPath)
+                .then(p => {
+                    const pkgAfter = h.readPackageSync(pkgPath);
+                    distScriptNames.forEach(n => {
+                        expect(pkgAfter.scripts[n],
+                            `script ${n} should have template value`
+                        ).to.equal(pkgDist.scripts[n]);
+                    });
+
+                    Object.getOwnPropertyNames(oldScripts).forEach(n => {
+                        expect(pkgAfter.scripts[n],
+                            `script ${n} should have pre-update value`
+                        ).to.equal(oldScripts[n]);
+                    });
+
+                    done();
+                })
+                .catch(e => done(e));
+
+            });
+
+
+        });
     });
 
 
