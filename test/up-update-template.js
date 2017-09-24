@@ -28,8 +28,6 @@ describe.only("unityPackage.updateTemplate - updates scripts and template files 
 
             pkgPath = tmpInstallPath;
 
-            // console.log('packagepath=%j', pkgPath);
-
             pkgDist = h.readPackageSync(pkgPath);
             distScriptNames = Object.getOwnPropertyNames(pkgDist.scripts);
             distDepNames = Object.getOwnPropertyNames(pkgDist.dependencies);
