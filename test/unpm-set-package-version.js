@@ -9,7 +9,7 @@ const h = require('./test-helpers.js');
 
 tmp.setGracefulCleanup();
 
-describe("unpm.setPackageVersion - sets the version for a unity package", () => {
+describe("unityPackage.setPackageVersion - sets the version for a unity package", () => {
     var pkgPath = null;
 
     beforeEach(function(done) {

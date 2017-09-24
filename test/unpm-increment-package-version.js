@@ -10,7 +10,7 @@ const h = require('./test-helpers.js');
 tmp.setGracefulCleanup();
 
 
-describe("unpm.incrementPackageVersion - increments the version for a unity package", () => {
+describe("unityPackage.incrementPackageVersion - increments the version for a unity package", () => {
     var pkgPath = null;
 
     beforeEach(function(done) {
