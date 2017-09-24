@@ -1,15 +1,16 @@
-const unpm = require('../lib/unity-npm-utils');
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs');
 const tmp = require('tmp');
 const spawn = require('child_process').spawn;
 const mlog = require('mocha-logger');
-const h = require('./test-helpers.js');
+
+const h = require('../test-helpers.js');
+const unpm = require('../../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 
-describe("unityPackage.setPackageVersion - sets the version for a unity package", () => {
+describe("setPackageVersion - sets the version for a package", () => {
     var pkgPath = null;
 
     beforeEach(function(done) {

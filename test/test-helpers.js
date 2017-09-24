@@ -1,10 +1,11 @@
-const unpm = require('../lib/unity-npm-utils');
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs');
 const tmp = require('tmp');
 const spawn = require('child_process').spawn;
 const mlog = require('mocha-logger');
+
+const unpm = require('../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 

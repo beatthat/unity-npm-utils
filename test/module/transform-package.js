@@ -1,15 +1,16 @@
-const unpm = require('../lib/unity-npm-utils');
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs');
 const tmp = require('tmp');
 const spawn = require('child_process').spawn;
 const mlog = require('mocha-logger');
-const h = require('./test-helpers.js');
+
+const h = require('../test-helpers.js');
+const unpm = require('../../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 
-describe('unpm.transformPackage - transforms a package json with options to read before and/or write after transform', () => {
+describe('transformPackage - transforms a package json with options to read before and/or write after transform', () => {
     var pkgPath = null;
 
     const pkgNameFoo = "my-pkg-foo";

@@ -1,14 +1,15 @@
-const unpm = require('../lib/unity-npm-utils');
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs');
 // const tmp = require('tmp');
 const mlog = require('mocha-logger');
-const h = require('./test-helpers.js');
+
+const h = require('../../test-helpers.js');
+const unpm = require('../../../lib/unity-npm-utils');
 
 // tmp.setGracefulCleanup();
 
-describe.only("unityPackage.updateTemplate - updates scripts and template files for an existing unity package", () => {
+describe("unityPackage.updateTemplate - updates scripts and template files for an existing unity package", () => {
 
     const pkgNameFoo = "my-pkg-foo";
     var pkgPath = null;

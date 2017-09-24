@@ -1,10 +1,11 @@
-const unpm = require('../lib/unity-npm-utils');
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs');
 const tmp = require('tmp');
 const mlog = require('mocha-logger');
-const h = require('./test-helpers.js');
+
+const h = require('../../test-helpers.js');
+const unpm = require('../../../lib/unity-npm-utils');
 
     describe("unityPackage.setPackageName - sets package.name and updates all name-dependent aspects of a unity package", () => {
         var pkgPath = null;
