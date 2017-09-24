@@ -2,7 +2,8 @@
 "use strict";
 const path = require('path');
 const fs = require('fs');
-const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
+const thisDir = __dirname; 
+const unpm = require(path.join(__dirname, '..', 'lib', 'unity-npm-utils.js'));
 
 if(process.argv.length < 3) {
     console.log('usage: mod-clone-pull package_name');
@@ -10,7 +11,7 @@ if(process.argv.length < 3) {
 }
 
 const pkgPath = process.argv[2];
-const pkgModuleRoot = path.join(thisDir, '..', '..', pkgPath);
+const pkgModuleRoot = path.join(__dirname, '..', '..', pkgPath);
 
 
 unpm.modCloneOrPull(pkgModuleRoot)

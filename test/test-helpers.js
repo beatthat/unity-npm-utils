@@ -9,6 +9,14 @@ const unpm = require('../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 
+/**
+ * Run a package shell command (with cwd set to the package room),
+ * e.g, <code>cd $pkgPath && npm run foo</code>
+ *
+ * @param {string} cmd the shell command to run
+ * @param {string} pkgPath the cwd path the command will be run from
+ * @param {function(err)} callback
+ */
 const runPkgCmd = (cmd, pkgPath, callback) => {
 
     const promise = new Promise((resolve, reject) => {
@@ -43,9 +51,59 @@ const runPkgCmd = (cmd, pkgPath, callback) => {
 }
 
 /**
+ * Run a unity-npm-utils/bin shell command
+ * with cwd set to ${unity-npm-utils_CLONE}/bin
+ * to emulate as if we had done a global install, <code>npm i -g unity-npm-utils</code>
+ * e.g, <code>unpm</code>
+ *
+ * @param {string} cmd the shell command to run
+ * @param {string} pkgPath the cwd path the command will be run from
+ * @param {function(err)} callback
+ */
+const runBinCmd = (cmd, callback) => {
+
+    const promise = new Promise((resolve, reject) => {
+
+        const pkgPath = path.join(__dirname, '..');
+
+        const cmdProc = spawn(`node ${cmd}`, {
+            shell: true,
+            cwd: path.join(pkgPath, 'bin')
+        });
+
+
+        const logFile = cmd.split(' ').reduce((acc, cur, i) => {
+            return i < 2? (acc? acc+'_': '') + cur.replace(/[^a-zA-Z0-9]/g, '-'): acc;
+        }) + '.log';
+
+        const log = path.join(pkgPath, logFile);
+
+        logStream = fs.createWriteStream(log, {
+            flags: 'a'
+        });
+
+        mlog.log(`running '${cmd}'...`);
+        mlog.log(`view logs at ${log}`);
+        mlog.pending('this may take a while...');
+
+        cmdProc.stdout.pipe(logStream);
+        cmdProc.stderr.pipe(logStream);
+
+        cmdProc.on('exit', (code, signal) => {
+            if (code !== 0 || signal) {
+                return reject(new Error(`${cmd} failed with code ${code} and signal ${signal}`));
+            }
+            return resolve();
+        });
+    });
+
+    if (!callback) { return promise; }
+    promise.then(pr => callback(null, pr)).catch(pe => callback(pe));
+}
+
+/**
  * @param options.package_name - if passed will set the package name
  * @param {function(err, installPath)} callback
- * @private
  */
 const installUnityPackageTemplateToTemp = (options, callback) => {
     if (typeof options === 'function') {
@@ -94,5 +152,6 @@ const readPackageSync = (pkgPath) => {
 }
 
 exports.runPkgCmd = runPkgCmd;
+exports.runBinCmd = runBinCmd;
 exports.installUnityPackageTemplateToTemp = installUnityPackageTemplateToTemp;
 exports.readPackageSync = readPackageSync;
