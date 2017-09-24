@@ -206,7 +206,7 @@ describe("unity-npm-utils.unityPackage", () => {
             .catch(e => done(e));
         });
 
-        it('preserves the name of the pre-update package', function done() {
+        it('preserves the name of the pre-update package', function(done) {
             this.timeout(10000);
 
             const nameToKeep = "some-weird-name";
@@ -229,30 +229,7 @@ describe("unity-npm-utils.unityPackage", () => {
 
         })
 
-        // it('preserves the version of the pre-update package', function done() {
-        //     this.timeout(10000);
-        //
-        //     const versionToKeep = "6.2.1";
-        //
-        //     unpm.unityPackage.(pkgPath, { package_name: nameToKeep }, (ne) => {
-        //         if(ne) { return done(ne); }
-        //
-        //         unpm.unityPackage.updateTemplate(pkgPath)
-        //         .then(p => {
-        //             const pkgAfter = h.readPackageSync(pkgPath);
-        //
-        //             expect(pkgAfter.name,
-        //                 'should preserve name of the pre-update package'
-        //             ).to.equal(nameToKeep)
-        //
-        //             done();
-        //         })
-        //         .catch(e => done(e));
-        //     });
-        //
-        // })
-
-        it("combines scripts previously defined in the package with new scripts from template, preferring the template version when there is overlap", function(done) {
+        it("combines scripts from template and pre-update package, preferring the template version", function(done) {
             this.timeout(10000);
 
             const pkgNoScripts = h.readPackageSync(pkgPath);
@@ -289,13 +266,11 @@ describe("unity-npm-utils.unityPackage", () => {
                         ).to.equal(oldScripts[n]);
                     });
 
-                    done();
+                    return done();
                 })
                 .catch(e => done(e));
 
             });
-
-
         });
     });
 
