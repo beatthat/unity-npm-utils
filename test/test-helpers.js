@@ -10,6 +10,15 @@ const unpm = require('../lib/unity-npm-utils');
 tmp.setGracefulCleanup();
 
 /**
+ * @private
+ */
+const _cmdToLogFileName = (cmd) => {
+    return cmd.split(' ').reduce((acc, cur, i) => {
+        return i < 3 && String(cur).match(/^[a-zA-Z0-9]+.*/)?
+            (acc? acc+'_': '') + cur.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 20): acc;
+    }) + '.log';
+}
+/**
  * Run a package shell command (with cwd set to the package room),
  * e.g, <code>cd $pkgPath && npm run foo</code>
  *
@@ -25,7 +34,7 @@ const runPkgCmd = (cmd, pkgPath, callback) => {
             cwd: pkgPath
         });
 
-        const log = path.join(pkgPath, 'npm-cmd.log');
+        const log = path.join(pkgPath, _cmdToLogFileName(cmd));
 
         logStream = fs.createWriteStream(log, {
             flags: 'a'
@@ -57,7 +66,6 @@ const runPkgCmd = (cmd, pkgPath, callback) => {
  * e.g, <code>unpm</code>
  *
  * @param {string} cmd the shell command to run
- * @param {string} pkgPath the cwd path the command will be run from
  * @param {function(err)} callback
  */
 const runBinCmd = (cmd, callback) => {
@@ -66,25 +74,22 @@ const runBinCmd = (cmd, callback) => {
 
         const pkgPath = path.join(__dirname, '..');
 
-        const cmdProc = spawn(`node ${cmd}`, {
-            shell: true,
-            cwd: path.join(pkgPath, 'bin')
+        const cmdParts = cmd.split(' ');
+
+        const cmdFull = `${path.join(pkgPath, 'bin', cmdParts[0])} ${[...cmdParts.slice(1)].join(' ')}`;
+
+        const cmdProc = spawn(`node ${cmdFull}`, {
+            shell: true
         });
 
-
-        const logFile = cmd.split(' ').reduce((acc, cur, i) => {
-            return i < 2? (acc? acc+'_': '') + cur.replace(/[^a-zA-Z0-9]/g, '-'): acc;
-        }) + '.log';
-
-        const log = path.join(pkgPath, logFile);
+        const log = path.join(pkgPath, _cmdToLogFileName(cmd));
 
         logStream = fs.createWriteStream(log, {
             flags: 'a'
         });
 
         mlog.log(`running '${cmd}'...`);
-        mlog.log(`view logs at ${log}`);
-        mlog.pending('this may take a while...');
+        mlog.log(`logging to ${log}`);
 
         cmdProc.stdout.pipe(logStream);
         cmdProc.stderr.pipe(logStream);
@@ -93,6 +98,7 @@ const runBinCmd = (cmd, callback) => {
             if (code !== 0 || signal) {
                 return reject(new Error(`${cmd} failed with code ${code} and signal ${signal}`));
             }
+
             return resolve();
         });
     });

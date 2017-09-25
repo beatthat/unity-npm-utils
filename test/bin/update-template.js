@@ -6,7 +6,7 @@ const tmp = require('tmp');
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
 
-describe.only("'[npm i -g unity-npm-utils &&] unpm update-template [path] : updates a unity package with latest template scripts and files", () => {
+describe.skip("'[npm i -g unity-npm-utils &&] unpm update-template [path] : updates a unity package with latest template scripts and files", () => {
     const pkgNameFoo = "my-pkg-foo";
     var pkgPath = null;
     var pkgDist = null;

@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+"use strict";
+
+const program = require('commander');
+
+program
+  .version('0.0.1')
+  .description('utils for using npm as a Unity package manager')
+  .command('init-package', 'install the template for a new unity package').alias('ip')
+  .parse(process.argv);

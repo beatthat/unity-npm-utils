@@ -9,6 +9,7 @@
     },
     "main": "./lib/unity-npm-utils",
     "bin": {
+        "unpm": "./bin/unpm",
         "unity2clone-overwrite": "./bin/unity2clone-overwrite",
         "unity2pkg-overwrite": "./bin/unity2pkg-overwrite",
         "mod-clone-pull": "./bin/mod-clone-pull",
@@ -25,7 +26,7 @@
     },
     "homepage": "https://github.com/beatthat/unity-npm-utils",
     "scripts": {
-        "test": "./node_modules/.bin/mocha --recursive --reporter spec",
+        "test": "./node_modules/.bin/mocha --recursive",
         "pretest:unityproject:install": "rm -f *.tgz",
         "test:unityproject:install": "npm pack && cp ${npm_package_name}-${npm_package_version}.tgz ${npm_package_name}-latest.tgz && cd test_unity_project && npm run clean && npm install",
         "clean": "rm -f *.tgz && cd test && npm run clean",
@@ -34,6 +35,7 @@
     "dependencies": {
         "child-process": "^1.0.2",
         "command-line-args": "^4.0.7",
+        "commander": "^2.11.0",
         "fs-extra-promise": "^1.0.1",
         "git-clone-or-pull": "^3.1.0",
         "home-or-tmp": "^3.0.0",

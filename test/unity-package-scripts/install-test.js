@@ -41,8 +41,7 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
                     return done(cmdErr);
                 })
             });
-
-
+            
         });
     });
 
