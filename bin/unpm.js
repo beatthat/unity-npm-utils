@@ -15,9 +15,9 @@ const optionsDefs = [
 
 const options = commandLineArgs(optionsDefs);
 
-console.log('options=%j', options);
-
-const installPath = path.join(process.cwd(), options.path || '.');
+const installPath = (options.path && options.path.match(/^\/.*/))?
+    options.path:
+    path.join(process.cwd(), options.path || '.');
 
 const promise = new Promise((resolve, reject) => {
     unpm.unityPackage.installTemplate(installPath, {}, (err) => {
