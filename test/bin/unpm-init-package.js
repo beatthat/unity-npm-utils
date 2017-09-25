@@ -7,7 +7,7 @@ const tmp = require('tmp');
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
 
-describe.only("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path] : installs the template for a unity npm package", () => {
+describe("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path] : installs the template for a unity npm package", () => {
     var tmpPath = null;
     var pkgPath = null;
 
@@ -15,7 +15,7 @@ describe.only("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path
         this.timeout(10000);
 
         tmp.dir((err, d) => {
-            if(err) { return done(path); }
+            if(err) { return done(err); }
 
             tmpPath = d;
             pkgPath = path.join(d, 'package-install');
@@ -37,22 +37,6 @@ describe.only("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path
         })
         .catch(e => done(e));
     })
-
-    it("sets package name when --package-name", function(done) {
-        this.timeout(10000);
-
-        const pkgName = 'my-pkg-foo';
-
-        h.runBinCmd(`unpm init-package -p ${pkgPath} --package-name ${pkgName}`)
-        .then(installed => {
-            const pkg = h.readPackageSync(pkgPath);
-
-            expect(pkg.name).to.equal(pkgName);
-
-            done();
-        })
-        .catch(e => done(e));
-    });
 
     it("sets package name when --package-name passed", function(done) {
         this.timeout(90000);

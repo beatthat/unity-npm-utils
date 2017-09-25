@@ -4,6 +4,7 @@ const fs = require('fs');
 const tmp = require('tmp');
 const spawn = require('child_process').spawn;
 const mlog = require('mocha-logger');
+const mcoloring = require('mocha').reporters.Base.color;
 
 const unpm = require('../lib/unity-npm-utils');
 
@@ -18,6 +19,10 @@ const _cmdToLogFileName = (cmd) => {
             (acc? acc+'_': '') + cur.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 20): acc;
     }) + '.log';
 }
+
+mlog.styles.pending.prefix = mcoloring('pending', '        ...');
+mlog.styles.log.prefix = mcoloring('light', '        -');
+
 /**
  * Run a package shell command (with cwd set to the package room),
  * e.g, <code>cd $pkgPath && npm run foo</code>
@@ -40,8 +45,8 @@ const runPkgCmd = (cmd, pkgPath, callback) => {
             flags: 'a'
         });
 
-        mlog.log(`running '${cmd}'...`);
-        mlog.log(`view logs at ${log}`);
+        mlog.pending(`running '${cmd}'...`);
+        mlog.pending(`view logs at ${log}`);
         mlog.pending('this may take a while...');
 
         cmdProc.stdout.pipe(logStream);
@@ -88,8 +93,8 @@ const runBinCmd = (cmd, callback) => {
             flags: 'a'
         });
 
-        mlog.log(`running '${cmd}'...`);
-        mlog.log(`logging to ${log}`);
+        mlog.pending(`running '${cmd}'...`);
+        mlog.pending(`logging to ${log}`);
 
         cmdProc.stdout.pipe(logStream);
         cmdProc.stderr.pipe(logStream);
