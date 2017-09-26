@@ -16,8 +16,6 @@ const installPath = (opts.installPath && (String(opts.installPath).match(/^\/.*/
     opts.installPath:
     path.join(process.cwd(), opts.installPath || '.');
 
-console.log('unpm-init-package - installPath=%j', installPath);
-
 const promise = new Promise((resolve, reject) => {
     unpm.unityPackage.installTemplate(installPath, {
         package_name: opts.packageName,

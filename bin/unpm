@@ -2,6 +2,8 @@
 
 "use strict";
 
+console.log('inside bin/unpm...');
+
 const program = require('commander');
 
 program

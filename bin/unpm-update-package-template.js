@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+console.log('update-package-template!!!');
+
 const opts = require('commander');
 const path = require('path');
 
@@ -7,7 +9,7 @@ const thisDir = __dirname;
 const unpm = require(path.join(__dirname, '..', 'lib', 'unity-npm-utils.js'));
 
 opts
-  .option('-p, --install-path [path]', 'set the install path for the package (default is cwd)')
+  .option('-p, --install-path [path]', 'set the path for the package (default is cwd)')
   .option('-v, --verbose', 'log verbose info to console')
   .parse(process.argv);
 
@@ -15,7 +17,7 @@ const installPath = (opts.installPath && (String(opts.installPath).match(/^\/.*/
     opts.installPath:
     path.join(process.cwd(), opts.installPath || '.');
 
-console.log('unpm-init-package - installPath=%j', installPath);
+console.log('unpm-update-package-template - installPath=%j', installPath);
 
 const promise = new Promise((resolve, reject) => {
     unpm.unityPackage.updateTemplate(installPath, {

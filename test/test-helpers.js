@@ -5,6 +5,7 @@ const tmp = require('tmp');
 const spawn = require('child_process').spawn;
 const mlog = require('mocha-logger');
 const mcoloring = require('mocha').reporters.Base.color;
+const dateFormat = require('dateformat');
 
 const unpm = require('../lib/unity-npm-utils');
 
@@ -14,7 +15,8 @@ tmp.setGracefulCleanup();
  * @private
  */
 const _cmdToLogFileName = (cmd) => {
-    return cmd.split(' ').reduce((acc, cur, i) => {
+    return dateFormat(new Date(), 'yyyymmdd-hhMMss') + '-'
+    + cmd.split(' ').reduce((acc, cur, i) => {
         return i < 3 && String(cur).match(/^[a-zA-Z0-9]+.*/)?
             (acc? acc+'_': '') + cur.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 20): acc;
     }) + '.log';
@@ -81,9 +83,9 @@ const runBinCmd = (cmd, callback) => {
 
         const cmdParts = cmd.split(' ');
 
-        const cmdFull = `${path.join(pkgPath, 'bin', cmdParts[0])} ${[...cmdParts.slice(1)].join(' ')}`;
+        const cmdFull = `node ${path.join(pkgPath, 'bin', cmdParts[0])} ${[...cmdParts.slice(1)].join(' ')}`;
 
-        const cmdProc = spawn(`node ${cmdFull}`, {
+        const cmdProc = spawn(`${cmdFull}`, {
             shell: true
         });
 
@@ -93,7 +95,7 @@ const runBinCmd = (cmd, callback) => {
             flags: 'a'
         });
 
-        mlog.pending(`running '${cmd}'...`);
+        mlog.pending(`running '${cmdFull}'...`);
         mlog.pending(`logging to ${log}`);
 
         cmdProc.stdout.pipe(logStream);

@@ -8,7 +8,7 @@ const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
 
 describe("'[npm i -g unity-npm-utils &&] unpm update-template [path] : updates a unity package with latest template scripts and files", () => {
-    const pkgNameFoo = "my-pkg-foo";
+    const pkgName = "my-pkg-foo";
     var pkgPath = null;
     var pkgDistNameSet = null;
     var distDepNames = null;
@@ -34,11 +34,10 @@ describe("'[npm i -g unity-npm-utils &&] unpm update-template [path] : updates a
             if(err) { return done(err); }
 
             tmpPath = d;
-            pkgPath = path.join(d, 'package-install');
+            pkgPath = path.join(tmpPath, 'package-install');
 
             mkdirp(pkgPath, (mkdirErr) => {
                 if(mkdirErr) { return done(mkdirErr); }
-                const pkgName = 'my-pkg-foo';
 
                 h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
                 .then(installed => {
@@ -88,6 +87,13 @@ describe("'[npm i -g unity-npm-utils &&] unpm update-template [path] : updates a
 
         h.runBinCmd(`unpm update-package-template -p ${pkgPath}`)
         .then(installed => {
+
+            const testPkgJsonPath = path.join(pkgPath, 'test', 'package.json');
+            expect(fs.existsSync(testPkgJsonPath),
+                `after update, test package.json file exists at ${testPkgJsonPath}`
+            ).to.equal(true);
+
+
             const pkgAfter = h.readPackageSync(pkgPath);
             distScriptNames.forEach(n => {
                 expect(pkgAfter.scripts[n]).to.equal(pkgDistNameSet.scripts[n]);
@@ -239,9 +245,40 @@ describe("'[npm i -g unity-npm-utils &&] unpm update-template [path] : updates a
             return done();
         })
         .catch(e => done(e));
+    });
+
+    it("ensures 'npm run install:test' creates an example Unity project with the package installed", function(done) {
+        this.timeout(90000);
+
+        const testPkgJsonPath = path.join(pkgPath, 'test', 'package.json');
+
+        expect(fs.existsSync(testPkgJsonPath),
+        `before update test package.json file exists at ${testPkgJsonPath}`
+        ).to.equal(true);
+
+        h.runBinCmd(`unpm update-package-template -p ${pkgPath} -v`)
+        .then(installed => {
+
+            expect(fs.existsSync(testPkgJsonPath),
+                `after update, test package.json file exists at ${testPkgJsonPath}`
+            ).to.equal(true);
 
 
+            h.runPkgCmd('npm run install:test', pkgPath).
+            then(testInstalled => {
+                const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName);
 
+                srcFiles.forEach(f => {
+                    const fpath = path.join(unityPkgPath, f.name);
+                    expect(fs.existsSync(fpath), `src file installed at ${fpath}`).to.equal(true);
+                    expect(fs.readFileSync(fpath, 'utf8'), `src file contents at ${fpath}=${f.content}`).to.equal(f.content);
+                });
+
+                done();
+            })
+            .catch(e => done(e));
+        })
+        .catch(e => done(e));
     });
 
 });
