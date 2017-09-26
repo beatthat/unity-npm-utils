@@ -1,11 +1,9 @@
-const expect = require('chai').expect;
-
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
 
 const updateTemplateBehaviour = require('../shared/update-package-template-behaviour.js')
 
-describe.only("'npm run template:update' - updates scripts and template files for an existing unity package", () => {
+describe("'npm run template:update' - updates scripts and template files for an existing unity package", () => {
     updateTemplateBehaviour((opts) => {
         return h.runPkgCmd('npm run template:update', opts.package_path);
     }, {

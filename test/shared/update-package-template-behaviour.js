@@ -39,8 +39,6 @@ const removeNonTemplateScripts = (pkgPath) => {
  * @callback updateTemplate
  * @param {string} options.package_path
  *      abs path to the (tmp dir) where package should install for the test
- * @param {string} options.package_name
- *      package name that should be set for the test
  */
 
 /**
