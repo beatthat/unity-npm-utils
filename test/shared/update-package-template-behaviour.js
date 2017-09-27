@@ -32,7 +32,6 @@ const removeNonTemplateScripts = (pkgPath) => {
     })
 }
 
-
 /**
  * See updateTemplateBehaviour below
  *

@@ -115,7 +115,11 @@ const runBinCmd = (cmd, callback) => {
 }
 
 /**
+ *
  * @param options.package_name - if passed will set the package name
+ * @param options.run_npm_install - if TRUE, will run <code>npm install</code> on the package before callback
+ * @param options.run_npm_install_no_scripts - if TRUE, will run <code>npm install --no-scripts</code> on the package before callback
+ *
  * @param {function(err, installPath)} callback
  */
 const installUnityPackageTemplateToTemp = (options, callback) => {
@@ -141,15 +145,21 @@ const installUnityPackageTemplateToTemp = (options, callback) => {
                 }
 
                 unpm.unityPackage.setPackageName(installPath, {
-                        package_name: options.package_name,
-                        verbose: false
-                    },
-                    (setNameErr) => {
-                        if (setNameErr) {
-                            return reject(setNameErr);
-                        }
-                        return resolve(installPath);
-                    });
+                    package_name: options.package_name,
+                    verbose: false
+                })
+                .then(setPkgNameDone => {
+                    const installCmd =
+                        options.run_npm_install_no_scripts? 'npm install --no-scripts':
+                        options.run_npm_install? 'npm install' : undefined;
+
+                    if(!installCmd) { return resolve(installPath); }
+
+                    runPkgCmd(installCmd, installPath)
+                    .then(installed => resolve(installPath))
+                    .catch(e => reject(e))
+                })
+                .catch(e => reject(e))
             });
         });
     });
