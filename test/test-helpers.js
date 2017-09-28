@@ -95,7 +95,7 @@ const runBinCmd = (cmd, callback) => {
             flags: 'a'
         });
 
-        mlog.pending(`running '${cmdFull}'...`);
+        mlog.pending(`running 'node ${cmd}'...`);
         mlog.pending(`logging to ${log}`);
 
         cmdProc.stdout.pipe(logStream);

@@ -9,7 +9,8 @@ const updateTemplateBehaviour = require('../shared/package-template-behaviour.js
 const pkgName = "my-pkg-foo";
 
 
-describe.skip("'npm init && npm install --save-dev beatthat/unity-npm-package-template' - updates scripts and template files for an existing unity package", () => {
+describe.only(`'npm init && npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v'
+        : updates scripts and template files for an existing unity package`, () => {
 
 
     beforeEach(function(done) {
@@ -54,7 +55,7 @@ describe.skip("'npm init && npm install --save-dev beatthat/unity-npm-package-te
 
     updateTemplateBehaviour({
         update_template_function: (opts) => {
-            return h.runPkgCmd('npm install --save-dev beatthat/unity-npm-package-template', opts.package_path);
+            return h.runPkgCmd('npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v', opts.package_path);
         }
     })
 

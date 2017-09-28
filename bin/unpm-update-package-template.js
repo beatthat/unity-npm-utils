@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-console.log('update-package-template!!!');
-
 const opts = require('commander');
 const path = require('path');
 
@@ -17,7 +15,9 @@ const installPath = (opts.installPath && (String(opts.installPath).match(/^\/.*/
     opts.installPath:
     path.join(process.cwd(), opts.installPath || '.');
 
-console.log('unpm-update-package-template - installPath=%j', installPath);
+if(opts.verbose) {
+    console.log('unpm-update-package-template - installPath=%j', installPath);
+}
 
 const promise = new Promise((resolve, reject) => {
     unpm.unityPackage.updateTemplate(installPath, {

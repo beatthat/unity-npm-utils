@@ -1,7 +1,6 @@
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const tmp = require('tmp');
 
 const h = require('../test-helpers.js');
@@ -72,14 +71,10 @@ const updateTemplateBehaviour = (options) => {
 
     const updateTemplate = options.update_template_function;
     var pkgPath = null;
-    var pkgBefore = pkgPath ? h.readPackageSync(pkgPath) : null;
-    var pkgName = pkgBefore? pkgBefore.name: null;
-    var pkgBeforeDependencyNames = pkgBefore ?
-        Object.getOwnPropertyNames(pkgBefore.dependencies) : null;
-
-    var pkgBeforeScriptNames = pkgBefore ?
-        Object.getOwnPropertyNames(pkgBefore.scripts) : null;;
-
+    var pkgBefore = null;
+    var pkgName = null;
+    var pkgBeforeDependencyNames = null;
+    var pkgBeforeScriptNames = null;
 
     const srcFiles = options.package_src_files || [];
 
@@ -96,8 +91,8 @@ const updateTemplateBehaviour = (options) => {
         done();
     });
 
-    it("adds all template scripts to main package scripts", function(done) {
-        this.timeout(10000);
+    it.only("adds all template scripts to main package scripts", function(done) {
+        this.timeout(90000);
 
         // wipe out existing scripts in installed package
         // so we can see that template-update will add them back
