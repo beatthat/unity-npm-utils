@@ -1,7 +1,7 @@
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
 
-const updateTemplateBehaviour = require('../shared/update-package-template-behaviour.js')
+const updateTemplateBehaviour = require('../shared/unpm-init-package-then-update-template-behaviour.js')
 
 describe("'[npm i -g unity-npm-utils &&] unpm update-template [path] : updates a unity package with latest template scripts and files", () => {
     updateTemplateBehaviour((opts) => {
