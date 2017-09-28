@@ -10,7 +10,7 @@ const unpm = require('../../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 
-describe.only('transformPackage - transforms a package json with options to read before and/or write after transform', () => {
+describe('transformPackage - transforms a package json with options to read before and/or write after transform', () => {
     var pkgPath = null;
 
     const pkgNameFoo = "my-pkg-foo";

@@ -58,6 +58,7 @@ const updateTemplateBehaviour = (updateTemplate, bOpts) => {
     var pkgDistNameSet = null;
     var distDepNames = null;
     var distScriptNames = null;
+    var distFiles = null;
 
     var tmpPath = null;
     var pkgPath = null;
@@ -83,13 +84,14 @@ const updateTemplateBehaviour = (updateTemplate, bOpts) => {
             tmpPath = d;
             pkgPath = path.join(tmpPath, 'package-install');
 
-            fs.ensureDir(pkgPath)
+            fs.ensureDirAsync(pkgPath)
             .then(pkgPathExists => {
                 h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
                 .then(afterPkgInit => {
                     pkgDistNameSet = h.readPackageSync(pkgPath);
                     distScriptNames = Object.getOwnPropertyNames(pkgDistNameSet.scripts);
                     distDepNames = Object.getOwnPropertyNames(pkgDistNameSet.dependencies);
+                    distFiles = pkgDistNameSet.files || [];
 
                     unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
                     .then(addedSrc => {
@@ -191,8 +193,7 @@ const updateTemplateBehaviour = (updateTemplate, bOpts) => {
         removeNonTemplateScripts(pkgPath)
         .then(mostScriptsRemoved => {
             unpm.transformPackage({
-                package_read_path: pkgPath,
-                package_write_path: pkgPath,
+                package_path: pkgPath,
                 transform: (p, cb) => {
                     p.scripts = {
                         ...p.scripts,
@@ -273,6 +274,41 @@ const updateTemplateBehaviour = (updateTemplate, bOpts) => {
             })
             .catch(e => done(e));
         });
+    });
+
+    it.only("combines file's from template and pre-update package", function(done) {
+        this.timeout(10000);
+
+        const filesBefore = ['/somedir_1'];
+
+        unpm.transformPackage({
+            package_path: pkgPath,
+            transform: (p, cb) => {
+                p.files = filesBefore;
+                cb(null, p);
+            }
+        })
+        .then(changedFiles => {
+            updateTemplate({ package_path: pkgPath })
+            .then(installed => {
+                const pkgAfter = h.readPackageSync(pkgPath);
+                distFiles.forEach(n => {
+                    expect(pkgAfter.files.includes(n),
+                        `files should include (template) item ${n}`
+                    ).to.equal(true);
+                });
+
+                filesBefore.forEach(n => {
+                    expect(pkgAfter.files.includes(n),
+                        `files should include (preserved) item ${n}`
+                    ).to.equal(true);
+                });
+
+                return done();
+            })
+            .catch(e => done(e));
+        })
+        .catch(e => done(e))
     });
 
     it("preserves source files from pre-update package", function(done) {
