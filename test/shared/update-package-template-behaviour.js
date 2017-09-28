@@ -1,7 +1,6 @@
 const expect = require('chai').expect;
 const path = require('path');
-const fs = require('fs');
-const mkdirp = require('mkdirp');
+const fs = require('fs-extra-promise');
 const tmp = require('tmp');
 
 const h = require('../test-helpers.js');
@@ -84,9 +83,8 @@ const updateTemplateBehaviour = (updateTemplate, bOpts) => {
             tmpPath = d;
             pkgPath = path.join(tmpPath, 'package-install');
 
-            mkdirp(pkgPath, (mkdirErr) => {
-                if(mkdirErr) { return done(mkdirErr); }
-
+            fs.ensureDir(pkgPath)
+            .then(pkgPathExists => {
                 h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
                 .then(afterPkgInit => {
                     pkgDistNameSet = h.readPackageSync(pkgPath);
@@ -107,7 +105,8 @@ const updateTemplateBehaviour = (updateTemplate, bOpts) => {
                     .catch(e => done(e));
                 })
                 .catch(e => done(e));
-            });
+            })
+            .catch(e => done(e))
         });
     });
 

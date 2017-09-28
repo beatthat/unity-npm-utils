@@ -10,7 +10,7 @@ const unpm = require('../../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 
-describe('transformPackage - transforms a package json with options to read before and/or write after transform', () => {
+describe.only('transformPackage - transforms a package json with options to read before and/or write after transform', () => {
     var pkgPath = null;
 
     const pkgNameFoo = "my-pkg-foo";
@@ -34,8 +34,7 @@ describe('transformPackage - transforms a package json with options to read befo
     it('can read -> transform -> write a package', function(done) {
 
         unpm.transformPackage({
-            package_read_path: pkgPath,
-            package_write_path: pkgPath,
+            package_path: pkgPath,
             transform: (pkg, callback) => {
                 pkg.scripts = { foo: 'bar' };
                 callback(null, pkg);
@@ -57,8 +56,7 @@ describe('transformPackage - transforms a package json with options to read befo
     it('returns a promise when no callback passed', function(done) {
 
         unpm.transformPackage({
-            package_read_path: pkgPath,
-            package_write_path: pkgPath,
+            package_path: pkgPath,
             transform: (pkg, callback) => {
                 pkg.scripts = { foo: 'bar' };
                 callback(null, pkg);
