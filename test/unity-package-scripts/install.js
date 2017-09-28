@@ -9,7 +9,7 @@ const updateTemplateBehaviour = require('../shared/package-template-behaviour.js
 const pkgName = "my-pkg-foo";
 
 
-describe.only(`'npm init && npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v'
+describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v'
         : updates scripts and template files for an existing unity package`, () => {
 
 

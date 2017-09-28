@@ -73,26 +73,49 @@ const updateTemplateBehaviour = (options) => {
     var pkgPath = null;
     var pkgBefore = null;
     var pkgName = null;
-    var pkgBeforeDependencyNames = null;
-    var pkgBeforeScriptNames = null;
+
+    var templatePath = null;
+    var templateDist = null;
+    var templateScriptNames = null;
+    var templateDependencyNames = null;
 
     const srcFiles = options.package_src_files || [];
 
+    before(function(done) {
+        this.timeout(10000);
+
+        h.installUnityPackageTemplateToTemp()
+        .then(installPath => {
+            templatePath = installPath;
+            unpm.readPackage(templatePath)
+            .then(p => {
+                templateDist = p;
+                templateScriptNames = Object.getOwnPropertyNames(p.scripts || {});
+                templateDependencyNames = Object.getOwnPropertyNames(p.dependencies || {});
+                done()
+            })
+            .catch(e => done(e))
+        });
+    });
+
     beforeEach(function(done) {
+        this.timeout(10000);
+
         if(!(pkgPath = requireConfig(this, 'package_path', done))) {
             return;
         }
 
-        pkgBefore = h.readPackageSync(pkgPath);
-        pkgName = pkgBefore.name;
-        pkgBeforeDependencyNames =Object.getOwnPropertyNames(pkgBefore.dependencies || {});
-        pkgBeforeScriptNames = Object.getOwnPropertyNames(pkgBefore.scripts || {});
-
-        done();
+        unpm.readPackage(pkgPath)
+        .then(p => {
+            pkgBefore = p;
+            pkgName = pkgBefore.name;
+            done();
+        })
+        .catch(e => done(e))
     });
 
-    it.only("adds all template scripts to main package scripts", function(done) {
-        this.timeout(90000);
+    it("adds all template scripts to main package scripts", function(done) {
+        this.timeout(180000);
 
         // wipe out existing scripts in installed package
         // so we can see that template-update will add them back
@@ -117,8 +140,8 @@ const updateTemplateBehaviour = (options) => {
 
 
                         const pkgAfter = h.readPackageSync(pkgPath);
-                        pkgBeforeScriptNames.forEach(n => {
-                            expect(pkgAfter.scripts[n]).to.equal(pkgBefore.scripts[n]);
+                        templateScriptNames.forEach(n => {
+                            expect(pkgAfter.scripts[n]).to.equal(templateDist.scripts[n]);
                         });
 
                         done();
@@ -129,37 +152,37 @@ const updateTemplateBehaviour = (options) => {
     });
 
     it('preserves the name and scope of the pre-update package', function(done) {
-        this.timeout(10000);
+        this.timeout(180000);
 
         const nameToKeep = "some-weird-name";
 
-        unpm.unityPackage.setPackageName(pkgPath, {
-            package_name: nameToKeep
-        }, (ne) => {
-            if (ne) {
-                return done(ne);
+        unpm.transformPackage({
+            package_path: pkgPath,
+            transform: (p, cb) => {
+                p.name = nameToKeep
+                cb(null, p);
             }
-
-            // h.runBinCmd(`unpm update-package-template -p ${pkgPath}`)
+        })
+        .then(nameChanged => {
             updateTemplate({
-                    package_path: pkgPath
-                })
-                .then(installed => {
-                    const pkgAfter = h.readPackageSync(pkgPath);
+                package_path: pkgPath
+            })
+            .then(installed => {
+                const pkgAfter = h.readPackageSync(pkgPath);
 
-                    expect(pkgAfter.name,
-                        'should preserve name of the pre-update package'
-                    ).to.equal(nameToKeep)
+                expect(pkgAfter.name,
+                    'should preserve name of the pre-update package'
+                ).to.equal(nameToKeep)
 
-                    done();
-                })
-                .catch(e => done(e));
-        });
-
+                done();
+            })
+            .catch(e => done(e))
+        })
+        .catch(e => done(e))
     })
 
     it("combines scripts from template and pre-update package, preferring the template version", function(done) {
-        this.timeout(10000);
+        this.timeout(180000);
 
         const pkgNoScripts = h.readPackageSync(pkgPath);
         var oldScripts = {
@@ -170,46 +193,45 @@ const updateTemplateBehaviour = (options) => {
         removeNonTemplateScripts(pkgPath)
             .then(mostScriptsRemoved => {
                 unpm.transformPackage({
-                        package_read_path: pkgPath,
-                        package_write_path: pkgPath,
-                        transform: (p, cb) => {
-                            p.scripts = {
-                                ...p.scripts,
-                                ...oldScripts,
-                                [pkgBeforeScriptNames[0]]: 'this val should be overwritten with template val for script'
-                            };
-                            cb(null, p);
-                        }
-                    })
-                    .then(addedSomeNewScripts => {
-                        // h.runBinCmd(`unpm update-package-template -p ${pkgPath}`)
-                        updateTemplate({
-                                package_path: pkgPath
-                            })
-                            .then(installed => {
-                                const pkgAfter = h.readPackageSync(pkgPath);
-                                pkgBeforeScriptNames.forEach(n => {
-                                    expect(pkgAfter.scripts[n],
-                                        `scripts.${n} should have template value`
-                                    ).to.equal(pkgBefore.scripts[n]);
-                                });
+                    package_path: pkgPath,
+                    transform: (p, cb) => {
+                        p.scripts = {
+                            ...p.scripts,
+                            ...oldScripts,
+                            [templateScriptNames[0]]: 'this val should be overwritten with template val for script'
+                        };
+                        cb(null, p);
+                    }
+                })
+                .then(addedSomeNewScripts => {
+                    // h.runBinCmd(`unpm update-package-template -p ${pkgPath}`)
+                    updateTemplate({
+                            package_path: pkgPath
+                        })
+                        .then(installed => {
+                            const pkgAfter = h.readPackageSync(pkgPath);
+                            templateScriptNames.forEach(n => {
+                                expect(pkgAfter.scripts[n],
+                                    `scripts.${n} should have template value`
+                                ).to.equal(templateDist.scripts[n]);
+                            });
 
-                                Object.getOwnPropertyNames(oldScripts).forEach(n => {
-                                    expect(pkgAfter.scripts[n],
-                                        `scripts.${n} should have pre-update value`
-                                    ).to.equal(oldScripts[n]);
-                                });
+                            Object.getOwnPropertyNames(oldScripts).forEach(n => {
+                                expect(pkgAfter.scripts[n],
+                                    `scripts.${n} should have pre-update value`
+                                ).to.equal(oldScripts[n]);
+                            });
 
-                                return done();
-                            })
-                            .catch(e => done(e))
-                    })
-                    .catch(e => done(e))
+                            return done();
+                        })
+                        .catch(e => done(e))
+                })
+                .catch(e => done(e))
             });
     });
 
     it("combines dependencies from template and pre-update package, preferring the template version", function(done) {
-        this.timeout(10000);
+        this.timeout(180000);
 
         const pkgNoDeps = h.readPackageSync(pkgPath);
         var oldDeps = {
@@ -219,12 +241,13 @@ const updateTemplateBehaviour = (options) => {
 
         // rename all scripts
         unpm.transformPackage({
-            package_read_path: pkgPath,
-            package_write_path: pkgPath,
+            package_path: pkgPath,
             transform: (p, cb) => {
                 p.dependencies = {
                     ...oldDeps,
-                    [pkgBeforeDependencyNames[0]]: 'this version should be overwritten with template version'
+                    ...(templateDependencyNames && templateDependencyNames.length > 0)?
+                        { [templateDependencyNames[0]]: 'this dependency should be overwritten with template version' }: {}
+
                 };
                 cb(null, p);
             }
@@ -236,30 +259,30 @@ const updateTemplateBehaviour = (options) => {
 
             // h.runBinCmd(`unpm update-package-template -p ${pkgPath}`)
             updateTemplate({
-                    package_path: pkgPath
-                })
-                .then(installed => {
-                    const pkgAfter = h.readPackageSync(pkgPath);
-                    pkgBeforeDependencyNames.forEach(n => {
-                        expect(pkgAfter.scripts[n],
-                            `dependencies.${n} should have template value`
-                        ).to.equal(pkgBefore.scripts[n]);
-                    });
+                package_path: pkgPath
+            })
+            .then(installed => {
+                const pkgAfter = h.readPackageSync(pkgPath);
+                templateDependencyNames.forEach(n => {
+                    expect(pkgAfter.dependencies[n],
+                        `dependencies.${n} should have template value`
+                    ).to.equal(templateDist.dependencies[n]);
+                });
 
-                    Object.getOwnPropertyNames(oldDeps).forEach(n => {
-                        expect(pkgAfter.dependencies[n],
-                            `dependencies.${n} should have pre-update value`
-                        ).to.equal(oldDeps[n]);
-                    });
+                Object.getOwnPropertyNames(oldDeps).forEach(n => {
+                    expect(pkgAfter.dependencies[n],
+                        `dependencies.${n} should have pre-update value`
+                    ).to.equal(oldDeps[n]);
+                });
 
-                    return done();
-                })
-                .catch(e => done(e));
+                return done();
+            })
+            .catch(e => done(e));
         });
     });
 
     it("preserves source files from pre-update package", function(done) {
-        this.timeout(10000);
+        this.timeout(180000);
 
         const pkgNoDeps = h.readPackageSync(pkgPath);
 
@@ -285,15 +308,10 @@ const updateTemplateBehaviour = (options) => {
     });
 
     it("ensures 'npm run install:test' creates an example Unity project with the package installed", function(done) {
-        this.timeout(90000);
+        this.timeout(360000);
 
         const testPkgJsonPath = path.join(pkgPath, 'test', 'package.json');
 
-        expect(fs.existsSync(testPkgJsonPath),
-            `before update test package.json file exists at ${testPkgJsonPath}`
-        ).to.equal(true);
-
-        // h.runBinCmd(`unpm update-package-template -p ${pkgPath} -v`)
         updateTemplate({
                 package_path: pkgPath
             })
@@ -306,17 +324,17 @@ const updateTemplateBehaviour = (options) => {
 
                 h.runPkgCmd('npm run install:test', pkgPath).
                 then(testInstalled => {
-                        const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName);
+                    const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName);
 
-                        srcFiles.forEach(f => {
-                            const fpath = path.join(unityPkgPath, f.name);
-                            expect(fs.existsSync(fpath), `src file installed at ${fpath}`).to.equal(true);
-                            expect(fs.readFileSync(fpath, 'utf8'), `src file contents at ${fpath}=${f.content}`).to.equal(f.content);
-                        });
+                    srcFiles.forEach(f => {
+                        const fpath = path.join(unityPkgPath, f.name);
+                        expect(fs.existsSync(fpath), `src file installed at ${fpath}`).to.equal(true);
+                        expect(fs.readFileSync(fpath, 'utf8'), `src file contents at ${fpath}=${f.content}`).to.equal(f.content);
+                    });
 
-                        done();
-                    })
-                    .catch(e => done(e));
+                    done();
+                })
+                .catch(e => done(e));
             })
             .catch(e => done(e));
     });

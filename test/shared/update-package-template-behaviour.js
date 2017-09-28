@@ -276,7 +276,7 @@ const updateTemplateBehaviour = (updateTemplate, bOpts) => {
         });
     });
 
-    it.only("combines file's from template and pre-update package", function(done) {
+    it("combines file's from template and pre-update package", function(done) {
         this.timeout(10000);
 
         const filesBefore = ['/somedir_1'];
