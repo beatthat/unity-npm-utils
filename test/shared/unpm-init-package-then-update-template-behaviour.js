@@ -66,7 +66,7 @@ const updateTemplateBehaviour = (updateTemplate, options) => {
                 return done();
             }
 
-            h.runPkgCmd('npm install --ignore-scripts', pkgPath) // ignore-scripts because nodegit post install is VERY long and not needed here
+            h.runPkgCmd('npm install', pkgPath) // ignore-scripts because nodegit post install is VERY long and not needed here
             .then(installed => done())
             .catch(e => done(e))
 
