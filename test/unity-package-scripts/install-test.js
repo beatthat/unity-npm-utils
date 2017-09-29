@@ -25,24 +25,14 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
 
         h.installUnityPackageTemplateToTemp({
             package_name: pkgNameFoo
-        }, (installErr, tmpInstallPath) => {
-            if (installErr) {
-                return done(installErr);
-            }
-
+        })
+        .then(tmpInstallPath => {
             pkgPath = tmpInstallPath;
-
-            unpm.unityPackage.addSrcFiles(pkgPath, srcFiles, (addErr) => {
-                if (addErr) {
-                    return done(addErr);
-                }
-
-                h.runPkgCmd('npm run install:test', pkgPath, (cmdErr) => {
-                    return done(cmdErr);
-                })
-            });
-
-        });
+            return unpm.unityPackage.addSrcFiles(pkgPath, srcFiles);
+        })
+        .then(addedSrcFiles => h.runPkgCmd('npm run install:test', pkgPath))
+        .then(success => done())
+        .catch(e => done(e))
     });
 
     it("installs under Plugins by default", function(done) {

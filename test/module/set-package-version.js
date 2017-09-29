@@ -43,29 +43,5 @@ describe("setPackageVersion - sets the version for a package", () => {
         });
     });
 
-    // it("accepts package PATH as arg", function(done) {
-    //     this.timeout(10000);
-    //
-    //     unpm.incrementPackageVersion(pkgPath, (err, pkgAfter) => {
-    //         if (err) {
-    //             return done(err);
-    //         }
-    //         expect(pkgAfter.version).to.equal('0.0.2');
-    //         done();
-    //     });
-    // });
-    //
-    // it("writes changes to package.json when PATH as arg", function(done) {
-    //     this.timeout(10000);
-    //
-    //     unpm.incrementPackageVersion(pkgPath, (err, pkgAfter) => {
-    //         if (err) {
-    //             return done(err);
-    //         }
-    //         const pkgWritten = h.readPackageSync(pkgPath);
-    //         expect(pkgWritten.version).to.equal('0.0.2');
-    //         done();
-    //     });
-    // });
 
 });

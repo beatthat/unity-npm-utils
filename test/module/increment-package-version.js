@@ -86,16 +86,19 @@ describe("incrementPackageVersion - increments the version for package", () => {
 
         unpm.incrementPackageVersion(pkg, {
             release_type: 'minor'
-        }, (err, pkgAfter) => {
+        })
+        .then(pkgAfter => {
             expect(pkgAfter.version, "accepts release_type 'minor'").to.equal('0.1.0');
 
-            unpm.incrementPackageVersion(pkg, {
+            return unpm.incrementPackageVersion(pkg, {
                 release_type: 'major'
-            }, (err, pkgAfter) => {
-                expect(pkgAfter.version, "accepts release_type 'minor'").to.equal('1.0.0');
-                done();
-            });
-        });
+            })
+        })
+        .then(pkgAfter => {
+            expect(pkgAfter.version, "accepts release_type 'minor'").to.equal('1.0.0');
+            done();
+        })
+        .catch(e => done(e))
 
     });
 });

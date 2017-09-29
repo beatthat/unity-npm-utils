@@ -1,6 +1,6 @@
 const fs = require('fs-extra-promise');
 const path = require('path');
-const tmp = require('tmp');
+const tmp = require('tmp-promise');
 
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
@@ -18,39 +18,29 @@ describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./nod
         this.timeout(30000);
 
         const test = this;
+        var pkgPath = null;
 
-        tmp.dir((err, tmpPath) => {
-            if(err) { return done(err); }
+        tmp.dir()
+        .then(d => {
+            pkgPath = path.join(d.path, 'package-install');
+            return fs.ensureDirAsync(pkgPath);
+        })
+        .then(pkgPathExists => {
+            test.test_config = {
+                package_path: pkgPath
+            };
 
-            const pkgPath = path.join(tmpPath, 'package-install');
-
-            fs.ensureDirAsync(pkgPath)
-            .then(pkgPathExists => {
-                test.test_config = {
-                    package_path: pkgPath
-                };
-
-                h.runPkgCmd('npm init --force', pkgPath)
-                .then(pkgDidInit => {
-
-                    unpm.transformPackage({
-                        package_path: pkgPath,
-                        transform: (p, cb) => {
-                            p.name = pkgName;
-                            cb(null, p);
-                        }
-                    })
-                    .then(pkgNameSet => done())
-                    .catch(e => {
-                        done(e)
-                    })
-                })
-                .catch(e => done(e))
-
-
-            })
-            .catch(e => done(e))
-        });
+            return h.runPkgCmd('npm init --force', pkgPath);
+        })
+        .then(pkgDidInit => unpm.transformPackage({
+            package_path: pkgPath,
+            transform: (p, cb) => {
+                p.name = pkgName;
+                cb(null, p);
+            }
+        }))
+        .then(pkgNameSet => done())
+        .catch(e => done(e))
     });
 
     updateTemplateBehaviour({

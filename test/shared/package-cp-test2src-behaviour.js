@@ -124,46 +124,41 @@ const writeFilesToUnityThenCopy2Pkg = (pkgPath, pkgName, copy2Src, unityFiles, d
         }
 
         Promise.all(unityChanges)
-        .then(unitySrcUpdated => {
+        .then(unitySrcUpdated => copy2Src({ package_path: pkgPath }))
+        .then(copied => {
+            const pkgSrcRoot = path.join(pkgPath, 'src', pkgName);
 
-            copy2Src({ package_path: pkgPath })
-            .then(copied => {
-                const pkgSrcRoot = path.join(pkgPath, 'src', pkgName);
+            const pkgChanges = unityFiles.map(f => {
+                return new Promise((resolve, reject) => {
+                    fs.readFileAsync(path.join(pkgSrcRoot, f.name), 'utf8')
+                    .then(content => {
+                        expect(content).to.equal(f.content);
+                        resolve();
+                    })
+                    .catch(e => reject(e))
+                });
+            });
 
-                const pkgChanges = unityFiles.map(f => {
-                    return new Promise((resolve, reject) => {
-                        fs.readFileAsync(path.join(pkgSrcRoot, f.name), 'utf8')
-                        .then(content => {
-                            expect(content).to.equal(f.content);
+            if(deleteUnityFiles) {
+                deleteUnityFiles.forEach(f => {
+                    pkgChanges.push(new Promise((resolve, reject) => {
+                        const fpath = path.join(pkgSrcRoot, f.name);
+                        fs.existsAsync(path.join(pkgSrcRoot, f.name))
+                        .then(deletedFileStillExistsInPkg => {
+                            expect(deletedFileStillExistsInPkg, expectDeletes?
+                                `${fpath} should be deleted from package source because it is not present in unity test source`:
+                                `${fpath} should NOT be deleted because overwrite option isn't set for this copy`
+                            ).to.not.equal(expectDeletes);
                             resolve();
                         })
                         .catch(e => reject(e))
-                    });
+                    }));
                 });
+            }
 
-                if(deleteUnityFiles) {
-                    deleteUnityFiles.forEach(f => {
-                        pkgChanges.push(new Promise((resolve, reject) => {
-                            const fpath = path.join(pkgSrcRoot, f.name);
-                            fs.existsAsync(path.join(pkgSrcRoot, f.name))
-                            .then(deletedFileStillExistsInPkg => {
-                                expect(deletedFileStillExistsInPkg, expectDeletes?
-                                    `${fpath} should be deleted from package source because it is not present in unity test source`:
-                                    `${fpath} should NOT be deleted because overwrite option isn't set for this copy`
-                                ).to.not.equal(expectDeletes);
-                                resolve();
-                            })
-                            .catch(e => reject(e))
-                        }));
-                    });
-                }
-
-                Promise.all(pkgChanges)
-                .then(allSuccess => doneResolve())
-                .catch(anyErr => doneReject(anyErr))
-            })
-            .catch(e => doneReject(e))
+            return Promise.all(pkgChanges)
         })
+        .then(allSuccess => doneResolve())
         .catch(e => doneReject(e))
     });
 }

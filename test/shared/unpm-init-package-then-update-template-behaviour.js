@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs-extra-promise');
-const tmp = require('tmp');
+const tmp = require('tmp-promise');
 
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
@@ -47,37 +47,31 @@ const updateTemplateBehaviour = (updateTemplate, options) => {
 
         const test = this;
 
-        tmp.dir((err, d) => {
-            if(err) { return done(err); }
-
-            tmpPath = d;
+        tmp.dir()
+        .then(d => {
+            tmpPath = d.path;
             pkgPath = path.join(tmpPath, 'package-install');
+            return fs.ensureDirAsync(pkgPath);
+        })
+        .then(pkgPathExists => h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`))
+        .then(afterPkgInit => {
+            test.test_config = {
+                package_path: pkgPath
+            };
 
-            fs.ensureDirAsync(pkgPath)
-            .then(pkgPathExists => {
-                h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
-                .then(afterPkgInit => {
-                    test.test_config = {
-                        package_path: pkgPath
-                    };
+            return unpm.unityPackage.addSrcFiles(pkgPath, srcFiles);
+        })
+        .then(addedSrc => {
+            if(!options.install_required) {
+                return done();
+            }
 
-                    unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
-                    .then(addedSrc => {
-                        if(!options.install_required) {
-                            return done();
-                        }
-
-                        h.runPkgCmd('npm install --ignore-scripts', pkgPath) // ignore-scripts because nodegit post install is VERY long and not needed here
-                        .then(installed => done())
-                        .catch(e => done(e))
-
-                    })
-                    .catch(e => done(e));
-                })
-                .catch(e => done(e));
-            })
+            h.runPkgCmd('npm install --ignore-scripts', pkgPath) // ignore-scripts because nodegit post install is VERY long and not needed here
+            .then(installed => done())
             .catch(e => done(e))
-        });
+
+        })
+        .catch(e => done(e));
     });
 
     require('./package-template-behaviour.js')({

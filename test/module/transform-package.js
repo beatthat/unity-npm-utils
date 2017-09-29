@@ -39,18 +39,13 @@ describe('transformPackage - transforms a package json with options to read befo
                 pkg.scripts = { foo: 'bar' };
                 callback(null, pkg);
             }
-        },
-        (err) => {
-            if(err) {
-                return done(err);
-            }
-
+        })
+        .then(p => {
             const pkgAfter = h.readPackageSync(pkgPath);
-
             expect(pkgAfter.scripts.foo).to.equal('bar');
-
             return done();
-        });
+        })
+        .catch(e => done(e))
     });
 
     it('returns a promise when no callback passed', function(done) {

@@ -51,15 +51,14 @@ describe("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path] : i
             expect(pkg.name).to.equal(pkgName);
             expect(fs.existsSync(srcPath), `should create a directory for source at ${srcPath}`).to.equal(true);
 
-            h.runPkgCmd('npm run install:test', pkgPath).
-            then(testInstalled => {
-                const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName);
+            return h.runPkgCmd('npm run install:test', pkgPath);
+        })
+        .then(testInstalled => {
+            const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName);
 
-                expect(fs.existsSync(unityPkgPath), `should install by default to Assets/Plugins/packages/${pkgName}`).to.equal(true);
+            expect(fs.existsSync(unityPkgPath), `should install by default to Assets/Plugins/packages/${pkgName}`).to.equal(true);
 
-                done();
-            })
-            .catch(e => done(e));
+            done();
         })
         .catch(e => done(e));
     });
@@ -68,20 +67,15 @@ describe("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path] : i
         this.timeout(10000);
 
         fs.writeFileAsync(path.join(pkgPath, 'anyfile.txt'), 'any content')
-        .then(wroteFile => {
-            h.runBinCmd(`unpm init-package -p ${pkgPath}`)
-            .then(installed => {
-                done(new Error(`should fail to install in non-empty dir: ${pkgPath}`))
-            })
-            .catch(e => {
-                expect(fs.existsSync(path.join(pkgPath, 'package.json')),
-                    `should fail to install to non-empty directory: ${pkgPath}`
-                ).to.equal(false);
+        .then(wroteFile => h.runBinCmd(`unpm init-package -p ${pkgPath}`))
+        .then(installed => done(new Error(`should fail to install in non-empty dir: ${pkgPath}`)))
+        .catch(e => {
+            expect(fs.existsSync(path.join(pkgPath, 'package.json')),
+                `should fail to install to non-empty directory: ${pkgPath}`
+            ).to.equal(false);
 
-                done();
-            });
+            done();
         })
-        .catch(e => done(e))
 
     });
 

@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const path = require('path');
 const fs = require('fs');
-const tmp = require('tmp');
+const tmp = require('tmp-promise');
 const spawn = require('child_process').spawn;
 const mlog = require('mocha-logger');
 const mcoloring = require('mocha').reporters.Base.color;
@@ -131,24 +131,22 @@ const installUnityPackageTemplateToTemp = (options, callback) => {
     options = options || {};
 
     const promise = new Promise((resolve, reject) => {
-        tmp.dir((tmpDirErr, tmpDir) => {
+        var installPath = null;
 
-            const installPath = path.join(tmpDir, options.package_name || 'unpm-testpackage');
+        tmp.dir().
+        then(d => {
+            installPath = path.join(d.path, options.package_name || 'unpm-testpackage');
+            return unpm.unityPackage.installTemplate(installPath, {});
+        })
+        .then(() => {
 
-            unpm.unityPackage.installTemplate(installPath, {}, (err) => {
+            if (!options.package_name) {
+                return resolve(installPath);
+            }
 
-                if (err) {
-                    return reject(new Error(err));
-                }
-
-                if (!options.package_name) {
-                    return resolve(installPath);
-                }
-
-                return unpm.unityPackage.setPackageName(installPath, {
-                    package_name: options.package_name,
-                    verbose: false
-                })
+            unpm.unityPackage.setPackageName(installPath, {
+                package_name: options.package_name,
+                verbose: false
             })
             .then(setPkgNameDone => {
                 const installCmd =
@@ -162,7 +160,8 @@ const installUnityPackageTemplateToTemp = (options, callback) => {
                 .catch(e => reject(e))
             })
             .catch(e => reject(e))
-        });
+        })
+        .catch(e => reject(e))
     });
 
     if (!callback) { return promise; }
