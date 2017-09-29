@@ -51,7 +51,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
 
         h.installUnityPackageTemplateToTemp({
             package_name: pkgName,
-            run_npm_install_no_scripts: true
+            run_npm_install: true
         }, (installErr, tmpInstallPath) => {
             if (installErr) {
                 return done(installErr);
@@ -68,7 +68,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         });
     });
 
-    it('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', function(done) {
+    it.only('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', function(done) {
 
         this.timeout(10000);
 
