@@ -132,7 +132,8 @@ const installUnityPackageTemplateToTemp = (options, callback) => {
 
     const promise = new Promise((resolve, reject) => {
         tmp.dir((tmpDirErr, tmpDir) => {
-            const installPath = path.join(tmpDir, 'unpm-testpackage');
+
+            const installPath = path.join(tmpDir, options.package_name || 'unpm-testpackage');
 
             unpm.unityPackage.installTemplate(installPath, {}, (err) => {
 
@@ -144,23 +145,23 @@ const installUnityPackageTemplateToTemp = (options, callback) => {
                     return resolve(installPath);
                 }
 
-                unpm.unityPackage.setPackageName(installPath, {
+                return unpm.unityPackage.setPackageName(installPath, {
                     package_name: options.package_name,
                     verbose: false
                 })
-                .then(setPkgNameDone => {
-                    const installCmd =
-                        options.run_npm_install_no_scripts? 'npm install --no-scripts':
-                        options.run_npm_install? 'npm install' : undefined;
+            })
+            .then(setPkgNameDone => {
+                const installCmd =
+                    options.run_npm_install_no_scripts? 'npm install --no-scripts':
+                    options.run_npm_install? 'npm install' : undefined;
 
-                    if(!installCmd) { return resolve(installPath); }
+                if(!installCmd) { return resolve(installPath); }
 
-                    runPkgCmd(installCmd, installPath)
-                    .then(installed => resolve(installPath))
-                    .catch(e => reject(e))
-                })
+                runPkgCmd(installCmd, installPath)
+                .then(installed => resolve(installPath))
                 .catch(e => reject(e))
-            });
+            })
+            .catch(e => reject(e))
         });
     });
 
