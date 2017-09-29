@@ -68,7 +68,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         });
     });
 
-    it.only('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', function(done) {
+    it('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', function(done) {
 
         this.timeout(10000);
 

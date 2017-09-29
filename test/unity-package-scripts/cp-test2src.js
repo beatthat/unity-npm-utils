@@ -3,7 +3,7 @@ const unpm = require('../../lib/unity-npm-utils');
 
 const cpTest2SrcBehaviour = require('../shared/package-cp-test2src-behaviour.js')
 
-describe.only(`'npm run cp:test2src' - copies files from a pkg's unity test proj back to src`, () => {
+describe(`'npm run cp:test2src' - copies files from a pkg's unity test proj back to src`, () => {
     cpTest2SrcBehaviour((opts) => {
         return h.runPkgCmd('npm run cp:test2src', opts.package_path);
     }, {
