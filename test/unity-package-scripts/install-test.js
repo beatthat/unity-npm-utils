@@ -21,7 +21,7 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
     ];
 
     before(function(done) {
-        this.timeout(90000);
+        this.timeout(300000);
 
         h.installUnityPackageTemplateToTemp({
             package_name: pkgNameFoo
