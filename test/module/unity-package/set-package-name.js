@@ -24,20 +24,28 @@ const unpm = require('../../../lib/unity-npm-utils');
             });
         });
 
-        it("writes new name to package.json", function(done) {
+        it.only("writes new name [and option scope] to package.json", function(done) {
             this.timeout(10000);
 
-            const newPkgName = 'my_new_name_for_this_pkg';
+            const newPkgName = 'my-new-pkg-name';
+            const newPkgScope = 'my-pkg-scope'
 
             unpm.unityPackage.setPackageName(pkgPath, {
-                package_name: newPkgName
-            }, (err, pkgAfter) => {
-                if (err) {
-                    return done(err);
-                }
+                package_name: newPkgName,
+                package_scope: newPkgScope
+            })
+            .then(pkgPath => {
+
                 const pkgWritten = h.readPackageSync(pkgPath);
-                expect(pkgWritten.name).to.equal(newPkgName);
+                expect(pkgWritten.name, 'should have written name').to.equal(newPkgName);
+                expect(pkgWritten.config.scope, 'should have written scope as a config property').to.equal(newPkgScope);
+
+                console.log('should call done')
                 done();
+            })
+            .catch(e => {
+                console.log(new Error().stack);
+                done(e);
             });
         });
 

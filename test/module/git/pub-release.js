@@ -14,7 +14,7 @@ describe.skip("pubRelease - publishes a new tagged release of a package", () => 
     var pkgBefore = null;
 
     beforeEach(function(done) {
-        this.timeout(10000);
+        this.timeout(300000);
 
         h.installUnityPackageTemplateToTemp({
             package_name: `${dateFormat(new Date(), 'yyyymmdd-hhMMss')}-test-pub-release`
@@ -31,7 +31,7 @@ describe.skip("pubRelease - publishes a new tagged release of a package", () => 
     });
 
     it("ensures package is init for git", function(done) {
-        this.timeout(10000);
+        this.timeout(300000);
 
         console.log('package path=%j', pkgPath);
 
@@ -55,9 +55,10 @@ describe.skip("pubRelease - publishes a new tagged release of a package", () => 
         .then(tmpDir => {
             clonePath = path.join(tmpDir.path, pkg.name)
             console.log('before clone clonePath=%j', clonePath)
-            return unpm.git.cloneOrPullPackage(pkgPath, { clone_dir: clonePath });
+            return unpm.git.cloneOrPullInstalledPackage(pkgPath, { clone_dir: tmpDir.path });
         })
-        .then(didClone => {
+        .then(info => {
+            clonePath = info.clone_package_path;
             console.log('clonePath=%j', clonePath)
             const clonePkg = h.readPackageSync(clonePath);
             expect(clonePkg.name, 'clone package has name set').to.equal(pkg.name);
