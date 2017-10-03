@@ -39,8 +39,6 @@ const unpm = require('../../../lib/unity-npm-utils');
                 const pkgWritten = h.readPackageSync(pkgPath);
                 expect(pkgWritten.name, 'should have written name').to.equal(newPkgName);
                 expect(pkgWritten.config.scope, 'should have written scope as a config property').to.equal(newPkgScope);
-
-                console.log('should call done')
                 done();
             })
             .catch(e => {
@@ -49,7 +47,7 @@ const unpm = require('../../../lib/unity-npm-utils');
             });
         });
 
-        it.only("forces package name and scope to cannonical lowercase and dash-delimited", function(done) {
+        it("forces package name and scope to cannonical lowercase and dash-delimited", function(done) {
             this.timeout(10000);
 
             const newPkgName = 'My New Pkg Name';
@@ -73,7 +71,6 @@ const unpm = require('../../../lib/unity-npm-utils');
                     'should have translated scope to cannonical lowercase and dash-delimited form'
                 ).to.equal(cannonicalPkgScope);
 
-                console.log('should call done')
                 done();
             })
             .catch(e => {
@@ -82,11 +79,14 @@ const unpm = require('../../../lib/unity-npm-utils');
             });
         });
 
-        it("sets a github repo url by default when package scope is set", function(done) {
+        it("sets a github urls for repo, issues, and homepage by default when package scope is set", function(done) {
             this.timeout(10000);
 
-            const newPkgName = 'my-new-pkg-name';
-            const newPkgScope = 'my-pkg-scope'
+            const newPkgName = 'My New Pkg Name';
+            const newPkgScope = 'My_Pkg Scope ';
+
+            const cannonicalPkgName = 'my-new-pkg-name';
+            const cannonicalPkgScope = 'my-pkg-scope'
 
             unpm.unityPackage.setPackageName(pkgPath, {
                 package_name: newPkgName,
@@ -96,11 +96,18 @@ const unpm = require('../../../lib/unity-npm-utils');
 
                 const pkgWritten = h.readPackageSync(pkgPath);
                 expect(pkgWritten.repository.type, 'should have written repository type as git').to.equal('git');
-                expect(pkgWritten.repository.url, 'should have written repository type as github url as default').to.equal(
-                    `git+https://github.com/${pkgWritten.config.scope}/${pkgWritten.name}.git`
+                expect(pkgWritten.repository.url, 'should have written repository type as github url').to.equal(
+                    `git+https://github.com/${cannonicalPkgScope}/${cannonicalPkgName}.git`
                 );
 
-                console.log('should call done')
+                expect(pkgWritten.bugs.url, 'should have written issues github bugs url').to.equal(
+                    `https://github.com/${cannonicalPkgScope}/${cannonicalPkgName}/issues`
+                );
+
+                expect(pkgWritten.homepage, 'should have written homepage github homepage url').to.equal(
+                    `https://github.com/${cannonicalPkgScope}/${cannonicalPkgName}`
+                );
+
                 done();
             })
             .catch(e => {
@@ -112,7 +119,7 @@ const unpm = require('../../../lib/unity-npm-utils');
         it("adds a folder under src with the new package name if none exists", function(done) {
             this.timeout(10000);
 
-            const newPkgName = 'my_new_name_for_this_pkg';
+            const newPkgName = 'my-new-name-for-this-pkg';
 
             unpm.unityPackage.setPackageName(pkgPath, {
                 package_name: newPkgName,
@@ -136,8 +143,8 @@ const unpm = require('../../../lib/unity-npm-utils');
         it("renames the existing (single) folder under (package_root)/src with the new package name", function(done) {
             this.timeout(10000);
 
-            const newPkgName_1 = 'my_new_name_for_this_pkg_1';
-            const newPkgName_2 = 'my_new_name_for_this_pkg_2';
+            const newPkgName_1 = 'my-new-name-for-this-pkg-1';
+            const newPkgName_2 = 'my-new-name-for-this-pkg-2';
 
             unpm.unityPackage.setPackageName(pkgPath, {
                 package_name: newPkgName_1,
