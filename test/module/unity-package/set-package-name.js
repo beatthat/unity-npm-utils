@@ -24,7 +24,7 @@ const unpm = require('../../../lib/unity-npm-utils');
             });
         });
 
-        it.only("writes new name [and option scope] to package.json", function(done) {
+        it("writes new name [and option scope] to package.json", function(done) {
             this.timeout(10000);
 
             const newPkgName = 'my-new-pkg-name';
@@ -39,6 +39,66 @@ const unpm = require('../../../lib/unity-npm-utils');
                 const pkgWritten = h.readPackageSync(pkgPath);
                 expect(pkgWritten.name, 'should have written name').to.equal(newPkgName);
                 expect(pkgWritten.config.scope, 'should have written scope as a config property').to.equal(newPkgScope);
+
+                console.log('should call done')
+                done();
+            })
+            .catch(e => {
+                console.log(new Error().stack);
+                done(e);
+            });
+        });
+
+        it.only("forces package name and scope to cannonical lowercase and dash-delimited", function(done) {
+            this.timeout(10000);
+
+            const newPkgName = 'My New Pkg Name';
+            const newPkgScope = 'My_Pkg Scope ';
+
+            const cannonicalPkgName = 'my-new-pkg-name';
+            const cannonicalPkgScope = 'my-pkg-scope'
+
+            unpm.unityPackage.setPackageName(pkgPath, {
+                package_name: newPkgName,
+                package_scope: newPkgScope
+            })
+            .then(pkgPath => {
+
+                const pkgWritten = h.readPackageSync(pkgPath);
+                expect(pkgWritten.name,
+                    'should have translated name to cannonical lowercase and dash-delimited form'
+                ).to.equal(cannonicalPkgName);
+
+                expect(pkgWritten.config.scope,
+                    'should have translated scope to cannonical lowercase and dash-delimited form'
+                ).to.equal(cannonicalPkgScope);
+
+                console.log('should call done')
+                done();
+            })
+            .catch(e => {
+                console.log(new Error().stack);
+                done(e);
+            });
+        });
+
+        it("sets a github repo url by default when package scope is set", function(done) {
+            this.timeout(10000);
+
+            const newPkgName = 'my-new-pkg-name';
+            const newPkgScope = 'my-pkg-scope'
+
+            unpm.unityPackage.setPackageName(pkgPath, {
+                package_name: newPkgName,
+                package_scope: newPkgScope
+            })
+            .then(pkgPath => {
+
+                const pkgWritten = h.readPackageSync(pkgPath);
+                expect(pkgWritten.repository.type, 'should have written repository type as git').to.equal('git');
+                expect(pkgWritten.repository.url, 'should have written repository type as github url as default').to.equal(
+                    `git+https://github.com/${pkgWritten.config.scope}/${pkgWritten.name}.git`
+                );
 
                 console.log('should call done')
                 done();
