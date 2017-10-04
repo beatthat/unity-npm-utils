@@ -4,20 +4,49 @@ const expect = require('chai').expect;
 const mlog = require('mocha-logger');
 const nodegit = require('nodegit');
 const path = require('path');
+const promisify = require('es6-promisify');
 const tmp = require('tmp-promise');
+
+const gitCredentialHelper = require('git-credential-helper');
+const gchAvailable = promisify(gitCredentialHelper.available);
+const gchFill = promisify(gitCredentialHelper.fill);
+
+
 const h = require('../../test-helpers.js');
 const unpm = require('../../../lib/unity-npm-utils');
 
+const findGitAccount = () => {
+    return new Promise((resolve, reject) => {
+        gchAvailable()
+        .then(a => {
+            if(!a) {
+                throw new Error('git credential helper is not available (required for this test)');
+            }
+            return gchFill('https://github.com');
+        })
+        .then(creds => {
+            if(!creds || !creds.username) {
+                throw new Error('github account credentials required for this test');
+            }
+            resolve(creds.username)
+        })
+        .catch(e => reject(e))
+    })
+}
 
-describe.skip("pubRelease - publishes a new tagged release of a package", () => {
+describe("pubRelease - publishes a new tagged release of a package", () => {
     var pkgPath = null;
     var pkgBefore = null;
 
     beforeEach(function(done) {
         this.timeout(300000);
 
-        h.installUnityPackageTemplateToTemp({
-            package_name: `${dateFormat(new Date(), 'yyyymmdd-hhMMss')}-test-pub-release`
+        findGitAccount()
+        .then(username => {
+            return h.installUnityPackageTemplateToTemp({
+                package_name: `${dateFormat(new Date(), 'yyyymmdd-hhMMss')}-test-pub-release`,
+                package_scope: username
+            })
         })
         .then(tmpInstallPath => {
             pkgPath = tmpInstallPath;
@@ -55,7 +84,7 @@ describe.skip("pubRelease - publishes a new tagged release of a package", () => 
         .then(tmpDir => {
             clonePath = path.join(tmpDir.path, pkg.name)
             console.log('before clone clonePath=%j', clonePath)
-            return unpm.git.cloneOrPullInstalledPackage(pkgPath, { clone_dir: tmpDir.path });
+            return unpm.git.cloneOrPullInstalledPackage(pkgPath, { clone_dir: tmpDir.path, verbose: true });
         })
         .then(info => {
             clonePath = info.clone_package_path;

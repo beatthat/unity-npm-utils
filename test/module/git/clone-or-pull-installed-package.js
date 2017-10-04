@@ -9,7 +9,7 @@ const h = require('../../test-helpers.js');
 const unpm = require('../../../lib/unity-npm-utils');
 
 
-describe("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
+describe.only("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
     var templatePkgPath = null;
 
     beforeEach(function(done) {
