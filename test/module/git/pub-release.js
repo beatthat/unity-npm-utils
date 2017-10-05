@@ -2,7 +2,7 @@
 const dateFormat = require('dateFormat')
 const expect = require('chai').expect;
 const mlog = require('mocha-logger');
-const nodegit = require('nodegit');
+const Repo = require('git-tools');
 const path = require('path');
 const promisify = require('es6-promisify');
 const tmp = require('tmp-promise');
@@ -34,7 +34,7 @@ const findGitAccount = () => {
     })
 }
 
-describe("pubRelease - publishes a new tagged release of a package", () => {
+describe.only("pubRelease - publishes a new tagged release of a package", () => {
     var pkgPath = null;
     var pkgBefore = null;
 
@@ -67,6 +67,8 @@ describe("pubRelease - publishes a new tagged release of a package", () => {
         var pkg = null;
         var clonePath = null;
 
+        const req = {};
+
         unpm.git.pubRelease(pkgPath, { verbose : true })
         .then(didPub => {
             console.log('after pubRelease')
@@ -74,11 +76,15 @@ describe("pubRelease - publishes a new tagged release of a package", () => {
         })
         .then(p => {
             pkg = p;
-            return nodegit.Repository.open(pkgPath);
+            req.repo = new Repo(pkgPath);
+            return req.repo.isRepo();
         })
-        .then(r => r.getStatus())
-        .then(statuses => {
-            expect(statuses.length, 'should be no local changes').to.equal(0);
+        .then(isRepo => {
+            expect(isRepo, `should be a repo at path ${req.repo.path}`).to.equal(true);
+            return req.repo.exec('status', '--short');
+        })
+        .then(stdout => {
+            expect(stdout.trim().length, 'git status should show no local changes').to.equal(0);
             return tmp.dir();
         })
         .then(tmpDir => {
