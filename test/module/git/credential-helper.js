@@ -1,7 +1,6 @@
 
 const expect = require('chai').expect;
 const mlog = require('mocha-logger');
-const nodegit = require('nodegit');
 
 const promisify = require('es6-promisify');
 const gitCredentialHelper = require('git-credential-helper');

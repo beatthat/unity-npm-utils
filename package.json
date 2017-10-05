@@ -41,6 +41,7 @@
         "es6-promisify": "^5.0.0",
         "fs-extra-promise": "^1.0.1",
         "git-credential-helper": "0.0.1",
+        "git-tools": "github:beatthat/node-git-tools",
         "graceful-ncp": "^3.0.0",
         "home-or-tmp": "^3.0.0",
         "mkdirp": "^0.5.1",
