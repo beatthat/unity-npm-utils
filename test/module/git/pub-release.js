@@ -34,7 +34,7 @@ const findGitAccount = () => {
     })
 }
 
-describe.only("pubRelease - publishes a new tagged release of a package", () => {
+describe("pubRelease - publishes a new tagged release of a package", () => {
     var pkgPath = null;
     var pkgBefore = null;
 
