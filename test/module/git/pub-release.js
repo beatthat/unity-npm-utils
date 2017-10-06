@@ -64,12 +64,16 @@ describe("pubRelease - publishes a new tagged release of a package", () => {
 
         console.log('package path=%j', pkgPath);
 
-        var pkg = null;
         var clonePath = null;
 
         const req = {};
 
-        unpm.git.pubRelease(pkgPath, { verbose : true })
+        unpm.readPackage(pkgPath)
+        .then(pkg => {
+            return unpm.git.pubRelease(pkgPath, {
+                verbose : true
+            });
+        })
         .then(didPub => {
             console.log('after pubRelease')
             return unpm.readPackage(pkgPath);
