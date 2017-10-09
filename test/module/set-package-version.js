@@ -10,37 +10,25 @@ const unpm = require('../../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 
-describe("setPackageVersion - sets the version for a package", () => {
+describe.only("setPackageVersion - sets the version for a package", () => {
     var pkgPath = null;
 
-    beforeEach(function(done) {
+    beforeEach(async function() {
         this.timeout(10000);
 
-        h.installUnityPackageTemplateToTemp((installErr, tmpInstallPath) => {
-            if (installErr) {
-                return done(installErr);
-            }
-
-            pkgPath = tmpInstallPath;
-            done();
-        });
+        pkgPath = await h.installUnityPackageTemplateToTemp();
     });
 
-    it("accepts package OBJECT as arg", function(done) {
+    it("accepts package OBJECT as arg", async function() {
         this.timeout(10000);
 
         const pkg = h.readPackageSync(pkgPath);
         const oldVersion = pkg.version;
         const newVersion = '1.2.3';
 
-        unpm.setPackageVersion(pkg, newVersion, (err, pkgAfter) => {
-            if (err) {
-                return done(err);
-            }
-            expect(pkg.version, 'should modify only copy of package passed to callback').to.equal(oldVersion);
-            expect(pkgAfter.version).to.equal(newVersion);
-            done();
-        });
+        const pkgAfter = await unpm.setPackageVersion(pkg, newVersion);
+        expect(pkg.version, 'should modify only copy of package passed to callback').to.equal(oldVersion);
+        expect(pkgAfter.version).to.equal(newVersion);
     });
 
 
