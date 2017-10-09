@@ -15,6 +15,8 @@ const gchFill = promisify(gitCredentialHelper.fill);
 const h = require('../../test-helpers.js');
 const unpm = require('../../../lib/unity-npm-utils');
 
+const DELETE_TEST_REPOS_ON_CLEANUP = true;
+
 const findGitAccount = () => {
     return new Promise((resolve, reject) => {
         gchAvailable()
