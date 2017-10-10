@@ -1,15 +1,7 @@
 const expect = require('chai').expect;
-const path = require('path');
-const fs = require('fs');
-const tmp = require('tmp');
-const spawn = require('child_process').spawn;
-const mlog = require('mocha-logger');
 
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
-
-tmp.setGracefulCleanup();
-
 
 describe("incrementPackageVersion - increments the version for package", () => {
     var pkgPath = null;
