@@ -42,36 +42,31 @@ const updateTemplateBehaviour = (updateTemplate, options) => {
         }
     ];
 
-    beforeEach(function(done) {
+    beforeEach(async function() {
         this.timeout(300000);
 
         const test = this;
 
-        tmp.dir()
-        .then(d => {
-            tmpPath = d.path;
-            pkgPath = path.join(tmpPath, 'package-install');
-            return fs.ensureDirAsync(pkgPath);
-        })
-        .then(pkgPathExists => h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`))
-        .then(afterPkgInit => {
-            test.test_config = {
-                package_path: pkgPath
-            };
+        const d = await tmp.dir()
 
-            return unpm.unityPackage.addSrcFiles(pkgPath, srcFiles);
-        })
-        .then(addedSrc => {
-            if(!options.install_required) {
-                return done();
-            }
+        tmpPath = d.path;
+        pkgPath = path.join(tmpPath, 'package-install');
 
-            h.runPkgCmd('npm install', pkgPath)
-            .then(installed => done())
-            .catch(e => done(e))
+        await fs.ensureDirAsync(pkgPath)
 
-        })
-        .catch(e => done(e));
+        await h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
+
+        test.test_config = {
+            package_path: pkgPath
+        };
+
+        await unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
+
+        if(!options.install_required) {
+            return done();
+        }
+
+        await h.runPkgCmd('npm install', pkgPath)
     });
 
     require('./package-template-behaviour.js')({
