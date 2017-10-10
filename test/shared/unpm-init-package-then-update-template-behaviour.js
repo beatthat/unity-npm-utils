@@ -63,7 +63,7 @@ const updateTemplateBehaviour = (updateTemplate, options) => {
         await unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
 
         if(!options.install_required) {
-            return done();
+            return;
         }
 
         await h.runPkgCmd('npm install', pkgPath)
