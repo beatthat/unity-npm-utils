@@ -9,38 +9,32 @@ const updateTemplateBehaviour = require('../shared/package-template-behaviour.js
 const pkgName = "my-pkg-foo";
 
 
-describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v'
+describe.only(`'npm init && npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v'
         : updates scripts and template files for an existing unity package`, () => {
 
 
-    beforeEach(function(done) {
+    beforeEach(async function() {
 
         this.timeout(30000);
 
-        const test = this;
-        var pkgPath = null;
+        const d = await tmp.dir()
+        const pkgPath = path.join(d.path, 'package-install');
 
-        tmp.dir()
-        .then(d => {
-            pkgPath = path.join(d.path, 'package-install');
-            return fs.ensureDirAsync(pkgPath);
-        })
-        .then(pkgPathExists => {
-            test.test_config = {
-                package_path: pkgPath
-            };
+        await fs.ensureDirAsync(pkgPath)
 
-            return h.runPkgCmd('npm init --force', pkgPath);
-        })
-        .then(pkgDidInit => unpm.transformPackage({
+        this.test_config = {
+            package_path: pkgPath
+        }
+
+        await h.runPkgCmd('npm init --force', pkgPath)
+
+        await unpm.transformPackage({
             package_path: pkgPath,
             transform: (p, cb) => {
                 p.name = pkgName;
                 cb(null, p);
             }
-        }))
-        .then(pkgNameSet => done())
-        .catch(e => done(e))
+        })
     });
 
     updateTemplateBehaviour({
