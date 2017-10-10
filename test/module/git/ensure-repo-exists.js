@@ -30,7 +30,7 @@ const findGitAccount = async () => {
     return creds;
 }
 
-describe.only("ensureRepoExists", () => {
+describe("ensureRepoExists", () => {
     var repoName = null;
     var userName = null;
     var github = null;
@@ -59,7 +59,7 @@ describe.only("ensureRepoExists", () => {
         }
     })
 
-    it.only("creates a github repo if it does not exist", async function() {
+    it("creates a github repo if it does not exist", async function() {
         this.timeout(30000);
 
         mlog.log(`attempting to create test repo: ${repoName} which should then be auto deleted by test cleanup.`)
@@ -71,7 +71,7 @@ describe.only("ensureRepoExists", () => {
 
         const repo = github.getRepo(userName, repoName);
 
-        await repo.getBranch('master');
+        await repo.getDetails();
 
     });
 
@@ -92,7 +92,7 @@ describe.only("ensureRepoExists", () => {
 
         const repo = github.getRepo(userName, repoName);
 
-        await repo.getBranch('master');
+        await repo.getDetails();
 
     });
 
