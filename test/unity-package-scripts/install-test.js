@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra-promise');
 const tmp = require('tmp');
 
 const h = require('../test-helpers.js');
@@ -20,28 +20,23 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
         }
     ];
 
-    before(function(done) {
+    before(async function() {
         this.timeout(300000);
 
-        h.installUnityPackageTemplateToTemp({
+        pkgPath = await h.installUnityPackageTemplateToTemp({
             package_name: pkgNameFoo
         })
-        .then(tmpInstallPath => {
-            pkgPath = tmpInstallPath;
-            return unpm.unityPackage.addSrcFiles(pkgPath, srcFiles);
-        })
-        .then(addedSrcFiles => h.runPkgCmd('npm run install:test', pkgPath))
-        .then(success => done())
-        .catch(e => done(e))
+
+        await unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
+
+        await h.runPkgCmd('npm run install:test', pkgPath)
     });
 
-    it("installs under Plugins by default", function(done) {
+    it("installs under Plugins by default", async function() {
 
         const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgNameFoo);
 
-        expect(fs.existsSync(unityPkgPath), `Plugin folder name matches package name ${unityPkgPath}`).to.equal(true);
-
-        return done();
+        expect(await fs.existsAsync(unityPkgPath), `Plugin folder name matches package name ${unityPkgPath}`).to.equal(true);
     });
 
 });
