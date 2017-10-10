@@ -10,7 +10,7 @@ const unpm = require('../../lib/unity-npm-utils');
 
 tmp.setGracefulCleanup();
 
-describe.only("setPackageVersion - sets the version for a package", () => {
+describe("setPackageVersion - sets the version for a package", () => {
     var pkgPath = null;
 
     beforeEach(async function() {
