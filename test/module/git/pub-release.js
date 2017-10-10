@@ -1,6 +1,7 @@
 
 const dateFormat = require('dateFormat')
 const expect = require('chai').expect;
+const GitHub = require('github-api');
 const mlog = require('mocha-logger');
 const Repo = require('git-tools');
 const path = require('path');
@@ -15,97 +16,94 @@ const gchFill = promisify(gitCredentialHelper.fill);
 const h = require('../../test-helpers.js');
 const unpm = require('../../../lib/unity-npm-utils');
 
-const DELETE_TEST_REPOS_ON_CLEANUP = true;
+const VERBOSE = false
 
-const findGitAccount = () => {
-    return new Promise((resolve, reject) => {
-        gchAvailable()
-        .then(a => {
-            if(!a) {
-                throw new Error('git credential helper is not available (required for this test)');
-            }
-            return gchFill('https://github.com');
-        })
-        .then(creds => {
-            if(!creds || !creds.username) {
-                throw new Error('github account credentials required for this test');
-            }
-            resolve(creds.username)
-        })
-        .catch(e => reject(e))
-    })
+const findGitAccount = async () => {
+
+    const a = await gchAvailable();
+
+    if (!a) {
+        throw new Error('git credential helper is not available (required for this test)');
+    }
+    const creds = await gchFill('https://github.com');
+
+    if (!creds || !creds.username || !creds.password) {
+        throw new Error('github account credentials required for this test');
+    }
+
+    return creds;
 }
 
-describe("pubRelease - publishes a new tagged release of a package", () => {
+describe("pubRelease", () => {
     var pkgPath = null;
     var pkgBefore = null;
+    var pkgAndRepoName = null;
+    var userName = null;
+    var github = null;
 
-    beforeEach(function(done) {
+    beforeEach(async function() {
         this.timeout(300000);
 
-        findGitAccount()
-        .then(username => {
-            return h.installUnityPackageTemplateToTemp({
-                package_name: `${dateFormat(new Date(), 'yyyymmdd-hhMMss')}-test-pub-release`,
-                package_scope: username
-            })
-        })
-        .then(tmpInstallPath => {
-            pkgPath = tmpInstallPath;
-            return unpm.readPackage(pkgPath);
-        })
-        .then(p => {
-            pkgBefore = p;
-            done();
-        })
-        .catch(e => done(e))
-    });
+        this.timeout(30000);
+        pkgAndRepoName = `${dateFormat(new Date(), 'yyyymmdd-hhMMss')}-test-pub-release`;
 
-    it("ensures package is init for git", function(done) {
+        const creds = await findGitAccount();
+        userName = creds.username;
+
+        github = new GitHub({
+            username: creds.username,
+            password: creds.password
+        });
+
+        pkgPath = await h.installUnityPackageTemplateToTemp({
+            package_name: pkgAndRepoName,
+            package_scope: userName
+        })
+
+        pkgBefore = await unpm.readPackage(pkgPath)
+    })
+
+    afterEach(async function() {
+        this.timeout(30000);
+        if(github && pkgAndRepoName) {
+
+            mlog.log(`attempting to delete test repo: ${userName}/${pkgAndRepoName}...`)
+            const repo = github.getRepo(userName, pkgAndRepoName)
+
+            await repo.deleteRepo()
+        }
+    })
+
+    // TODO: this seems wrong. Is the package itself REALLY supposed to become a git clone (or should only external copy?)
+    it("converts a non-git package into a git clone", async function() {
         this.timeout(300000);
 
-        console.log('package path=%j', pkgPath);
+        await unpm.git.pubRelease(pkgPath, {
+            verbose : VERBOSE
+        })
 
-        var clonePath = null;
+        const pkg = await unpm.readPackage(pkgPath);
 
-        const req = {};
+        const repo = new Repo(pkgPath);
 
-        unpm.readPackage(pkgPath)
-        .then(pkg => {
-            return unpm.git.pubRelease(pkgPath, {
-                verbose : true
-            });
-        })
-        .then(didPub => {
-            console.log('after pubRelease')
-            return unpm.readPackage(pkgPath);
-        })
-        .then(p => {
-            pkg = p;
-            req.repo = new Repo(pkgPath);
-            return req.repo.isRepo();
-        })
-        .then(isRepo => {
-            expect(isRepo, `should be a repo at path ${req.repo.path}`).to.equal(true);
-            return req.repo.exec('status', '--short');
-        })
-        .then(stdout => {
-            expect(stdout.trim().length, 'git status should show no local changes').to.equal(0);
-            return tmp.dir();
-        })
-        .then(tmpDir => {
-            clonePath = path.join(tmpDir.path, pkg.name)
-            console.log('before clone clonePath=%j', clonePath)
-            return unpm.git.cloneOrPullInstalledPackage(pkgPath, { clone_dir: tmpDir.path, verbose: true });
-        })
-        .then(info => {
-            clonePath = info.clone_package_path;
-            console.log('clonePath=%j', clonePath)
-            const clonePkg = h.readPackageSync(clonePath);
-            expect(clonePkg.name, 'clone package has name set').to.equal(pkg.name);
-            done();
-        })
-        .catch(e => done(e))
+        const isRepo = await repo.isRepo();
+
+        expect(isRepo, `should be a repo at path ${repo.path}`).to.equal(true);
+
+        const repoStatus = await repo.exec('status', '--short');
+        expect(repoStatus.trim().length, 'git status should show no local changes').to.equal(0);
+
+        const tmpDir = await tmp.dir();
+
+        const clonePath = path.join(tmpDir.path, pkg.name)
+
+        const cloneOrInstallInfo = await unpm.git.cloneOrPullInstalledPackage(pkgPath, {
+            clone_dir: tmpDir.path,
+            verbose: VERBOSE
+        });
+
+        const clonePkg = h.readPackageSync(clonePath)
+        expect(clonePkg.name, 'clone package has name set').to.equal(pkg.name)
     });
 
     it.skip("creates a new patch release if no release type specified", function(done) {

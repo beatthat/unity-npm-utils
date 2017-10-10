@@ -116,58 +116,38 @@ const runBinCmd = (cmd, callback) => {
 
 /**
  *
- * @param options.package_name - if passed will set the package name
- * @param options.package_scope - if passed will set the package config.scope
- * @param options.run_npm_install - if TRUE, will run <code>npm install</code> on the package before callback
- * @param options.run_npm_install_no_scripts - if TRUE, will run <code>npm install --no-scripts</code> on the package before callback
+ * @param opts.package_name - if passed will set the package name
+ * @param opts.package_scope - if passed will set the package config.scope
+ * @param opts.run_npm_install - if TRUE, will run <code>npm install</code> on the package before callback
+ * @param opts.run_npm_install_no_scripts - if TRUE, will run <code>npm install --no-scripts</code> on the package before callback
  *
- * @param {function(err, installPath)} callback
  */
-const installUnityPackageTemplateToTemp = (options, callback) => {
-    if (typeof options === 'function') {
-        callback = options;
-        options = {};
+const installUnityPackageTemplateToTemp = async (opts) => {
+
+    opts = opts || {};
+
+    const d = await tmp.dir()
+    const installPath = path.join(d.path, opts.package_name || 'unpm-testpackage')
+
+    await unpm.unityPackage.installTemplate(installPath, {})
+
+    if (!opts.package_name) {
+        return installPath;
     }
 
-    options = options || {};
+    await unpm.unityPackage.setPackageName(installPath, {
+        package_name: opts.package_name,
+        package_scope: opts.package_scope,
+        verbose: false
+    })
 
-    const promise = new Promise((resolve, reject) => {
-        var installPath = null;
+    const installCmd =
+        opts.run_npm_install_no_scripts? 'npm install --no-scripts':
+        opts.run_npm_install? 'npm install' : undefined;
 
-        tmp.dir().
-        then(d => {
-            installPath = path.join(d.path, options.package_name || 'unpm-testpackage');
-            return unpm.unityPackage.installTemplate(installPath, {});
-        })
-        .then(() => {
+    if(!installCmd) { return installPath }
 
-            if (!options.package_name) {
-                return resolve(installPath);
-            }
-
-            unpm.unityPackage.setPackageName(installPath, {
-                package_name: options.package_name,
-                package_scope: options.package_scope,
-                verbose: false
-            })
-            .then(setPkgNameDone => {
-                const installCmd =
-                    options.run_npm_install_no_scripts? 'npm install --no-scripts':
-                    options.run_npm_install? 'npm install' : undefined;
-
-                if(!installCmd) { return resolve(installPath); }
-
-                runPkgCmd(installCmd, installPath)
-                .then(installed => resolve(installPath))
-                .catch(e => reject(e))
-            })
-            .catch(e => reject(e))
-        })
-        .catch(e => reject(e))
-    });
-
-    if (!callback) { return promise; }
-    promise.then(pr => callback(null, pr)).catch(pe => callback(pe));
+    await runPkgCmd(installCmd, installPath)
 
 }
 
