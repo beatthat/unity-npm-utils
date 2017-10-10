@@ -132,7 +132,7 @@ const installUnityPackageTemplateToTemp = async (opts) => {
     await unpm.unityPackage.installTemplate(installPath, {})
 
     if (!opts.package_name) {
-        return installPath;
+        return installPath
     }
 
     await unpm.unityPackage.setPackageName(installPath, {
@@ -148,6 +148,8 @@ const installUnityPackageTemplateToTemp = async (opts) => {
     if(!installCmd) { return installPath }
 
     await runPkgCmd(installCmd, installPath)
+
+    return installPath
 
 }
 

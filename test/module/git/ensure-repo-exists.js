@@ -1,18 +1,18 @@
 const dateFormat = require('dateFormat')
-const expect = require('chai').expect;
-const GitHub = require('github-api');
+const expect = require('chai').expect
+const GitHub = require('github-api')
 
-const mlog = require('mocha-logger');
+const mlog = require('mocha-logger')
 
-const h = require('../../test-helpers.js');
-const unpm = require('../../../lib/unity-npm-utils');
+const h = require('../../test-helpers.js')
+const unpm = require('../../../lib/unity-npm-utils')
 
-const promisify = require('es6-promisify');
-const gitCredentialHelper = require('git-credential-helper');
-const gchAvailable = promisify(gitCredentialHelper.available);
-const gchFill = promisify(gitCredentialHelper.fill);
+const promisify = require('es6-promisify')
+const gitCredentialHelper = require('git-credential-helper')
+const gchAvailable = promisify(gitCredentialHelper.available)
+const gchFill = promisify(gitCredentialHelper.fill)
 
-const VERBOSE = false;
+const VERBOSE = false
 
 const findGitAccount = async () => {
 
@@ -30,7 +30,7 @@ const findGitAccount = async () => {
     return creds;
 }
 
-describe("ensureRepoExists", () => {
+describe.only("ensureRepoExists", () => {
     var repoName = null;
     var userName = null;
     var github = null;
@@ -59,7 +59,7 @@ describe("ensureRepoExists", () => {
         }
     })
 
-    it("creates a github repo if it does not exist", async function() {
+    it.only("creates a github repo if it does not exist", async function() {
         this.timeout(30000);
 
         mlog.log(`attempting to create test repo: ${repoName} which should then be auto deleted by test cleanup.`)
