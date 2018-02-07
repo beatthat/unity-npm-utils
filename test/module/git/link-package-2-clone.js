@@ -11,7 +11,7 @@ const unpm = require('../../../lib/unity-npm-utils')
 
 const VERBOSE = false;
 
-describe.only("git.linkPackage2Clone", () => {
+describe("git.linkPackage2Clone", () => {
     var templatePkgPath = null;
 
     beforeEach(async function() {
@@ -24,7 +24,7 @@ describe.only("git.linkPackage2Clone", () => {
 
     });
 
-    it.only("ensures clone exists", async function() {
+    it("ensures clone exists", async function() {
         this.timeout(30000);
 
         const pkgToClone = 'unity-npm-utils'; // cause we know it's already installed in templatePkgPath
