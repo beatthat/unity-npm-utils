@@ -33,6 +33,7 @@
         "pub:tag": "git add -A && git commit -m ${npm_package_version} && git tag -a ${npm_package_version} -m ${npm_package_version} && git push origin master && git push origin ${npm_package_version}"
     },
     "dependencies": {
+        "app-root-path": "^2.0.1",
         "child-process": "^1.0.2",
         "command-line-args": "^4.0.7",
         "commander": "^2.11.0",
