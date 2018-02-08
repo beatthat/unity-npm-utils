@@ -6,28 +6,52 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
-describe("unityPackage.copyPackageInfo", () => {
+describe.only("unityPackage.copyPackageInfo", () => {
 
-
+    /**
+     * test that copyPackageInfo can take an arbitrary installed package
+     * and write the details of that package to the file unpm-local.json
+     */
     it("- copies info required to install a package to unity from node_modules to unpm-packages.json", async function() {
       this.timeout(30000);
 
       const unpmPkg = h.readPackageSync(appRoot)
-
       expect(unpmPkg.name).to.equal('unity-npm-utils')
 
-      const testPkgPath = await h.installLocalUnpmToPackage()
+      //////////////////////////////////////////////////////////////////////
+      // first let's create a test package with unity-npm-utils installed...
+      //////////////////////////////////////////////////////////////////////
+
+      const testProjPath = await h.installLocalUnpmToPackage()
 
       expect(
-        fs.existsSync(path.join(testPkgPath, 'package.json')),
-        'test project should be installed at root ' + testPkgPath
+        fs.existsSync(path.join(testProjPath, 'package.json')),
+        'test project should be installed at root ' + testProjPath
       ).to.equal(true)
 
-      const testPkg = h.readPackageSync(appRoot)
+      var testProj = h.readPackageSync(testProjPath)
 
       expect(
-        testPkg.dependencies['unity-npm-utils']
-      ).to.not.be.null
+        testProj.dependencies['unity-npm-utils']
+      ).to.exist
+
+      ////////////////////////////////////////////////////////////////////
+      // Now let's install a random package ('fs-extra' for this example)
+      // This is the package we will test against further down
+      ////////////////////////////////////////////////////////////////////
+
+      const testInstallPkg = "fs-extra"
+
+      await h.runPkgCmdAsync('npm install --save ' + testInstallPkg, testProjPath)
+
+      testProj = h.readPackageSync(testProjPath)
+
+      expect(
+        testProj.dependencies[testInstallPkg],
+        testInstallPkg + ' should have been installed to the test project at ' + testProjPath
+      ).to.exist
+
+
 
       // const testPkgRoot = await h.createTmpPackageDir()
       //
