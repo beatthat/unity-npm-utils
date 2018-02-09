@@ -13,9 +13,10 @@ describe.only("unityPackage.copyPackageInfo", () => {
      * and write the details of that package to the file unpm-local.json
      */
     it("- copies info required to install a package to unity from node_modules to unpm-packages.json", async function() {
-      this.timeout(30000);
+      this.timeout(30000)
 
-      const unpmPkg = h.readPackageSync(appRoot)
+      const unpmPkg = await unpm.readPackage(appRoot)
+
       expect(unpmPkg.name).to.equal('unity-npm-utils')
 
       //////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ describe.only("unityPackage.copyPackageInfo", () => {
         'test project should be installed at root ' + testProjPath
       ).to.equal(true)
 
-      var testProj = h.readPackageSync(testProjPath)
+      var testProj = await unpm.readPackage(testProjPath)
 
       expect(
         testProj.dependencies['unity-npm-utils']
@@ -44,48 +45,35 @@ describe.only("unityPackage.copyPackageInfo", () => {
 
       await h.runPkgCmdAsync('npm install --save ' + testInstallPkg, testProjPath)
 
-      testProj = h.readPackageSync(testProjPath)
+      testProj = await unpm.readPackage(testProjPath)
 
       expect(
         testProj.dependencies[testInstallPkg],
         testInstallPkg + ' should have been installed to the test project at ' + testProjPath
       ).to.exist
 
+      ////////////////////////////////////////////////////////////
+      // now finally make the call to copy package info
+      // and follow up with some tests/expectations
+      ///////////////////////////////////////////////////////////
 
+      await unpm.copyPackageInfo(testProjPath, testInstallPkg)
 
-      // const testPkgRoot = await h.createTmpPackageDir()
-      //
-      // expect(
-      //   fs.existsSync(testPkgRoot),
-      //   'temp directory should exist at ' + testPkgRoot
-      // ).to.equal(true)
-      //
-      // await h.runPkgCmdAsync('npm init --force && npm install --save debug', testPkgRoot);
-      //
-      // expect(
-      //   fs.existsSync(path.join(testPkgRoot, 'package.json')),
-      //   'test project should be installed at root ' + testPkgRoot
-      // ).to.equal(true)
+      const unpmLocalPath = path.join(testProjPath, "unpm-local.json")
+
+      expect(
+        await fs.existsAsync(unpmLocalPath),
+        'unpm-local.json should have been written at ' + unpmLocalPath
+      ).to.equal(true)
+
+      const unpmLocal = await await unpm.readUnpmLocal(testProjPath)
+
+      expect(
+        unpmLocal.packages[testInstallPkg].name,
+        'unpm-local.json should contain an entry for the test package ('
+        + testInstallPkg + ')'
+      ).to.equal(testInstallPkg)
 
     })
-
-    // var pkgPath = null;
-    //
-    // before(async function() {
-    //     this.timeout(10000);
-    //     pkgPath = await h.installUnityPackageTemplateToTemp();
-    // });
-    //
-    // it("installs template files", async () => {
-    //     const packageJsonPath = path.join(pkgPath, 'package.json');
-    //
-    //     expect(await fs.existsAsync(packageJsonPath),
-    //         `package.json should exist in install path ${pkgPath}`).to.equal(true);
-    // });
-    //
-    // it("sets initial version to 0.0.1", () => {
-    //     const pkg = h.readPackageSync(pkgPath);
-    //     expect(pkg.version).to.equal('0.0.1');
-    // });
 
 });
