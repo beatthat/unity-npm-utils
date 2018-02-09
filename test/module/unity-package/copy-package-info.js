@@ -41,15 +41,15 @@ describe.only("unityPackage.copyPackageInfo", () => {
       // This is the package we will test against further down
       ////////////////////////////////////////////////////////////////////
 
-      const testInstallPkg = "fs-extra"
+      const testInstallPkgName = "fs-extra"
 
-      await h.runPkgCmdAsync('npm install --save ' + testInstallPkg, testProjPath)
+      await h.runPkgCmdAsync('npm install --save ' + testInstallPkgName, testProjPath)
 
       testProj = await unpm.readPackage(testProjPath)
 
       expect(
-        testProj.dependencies[testInstallPkg],
-        testInstallPkg + ' should have been installed to the test project at ' + testProjPath
+        testProj.dependencies[testInstallPkgName],
+        testInstallPkgName + ' should have been installed to the test project at ' + testProjPath
       ).to.exist
 
       ////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ describe.only("unityPackage.copyPackageInfo", () => {
       // and follow up with some tests/expectations
       ///////////////////////////////////////////////////////////
 
-      await unpm.copyPackageInfo(testProjPath, testInstallPkg)
+      await unpm.copyPackageInfo(testProjPath, testInstallPkgName)
 
       const unpmLocalPath = path.join(testProjPath, "unpm-local.json")
 
@@ -68,11 +68,21 @@ describe.only("unityPackage.copyPackageInfo", () => {
 
       const unpmLocal = await await unpm.readUnpmLocal(testProjPath)
 
+      const testInstallPkg = await unpm.readPackage(
+        path.join(testProjPath, 'node_modules', testInstallPkgName))
+
       expect(
-        unpmLocal.packages[testInstallPkg].name,
+        unpmLocal.packages[testInstallPkgName].name,
         'unpm-local.json should contain an entry for the test package ('
-        + testInstallPkg + ')'
-      ).to.equal(testInstallPkg)
+        + testInstallPkgName + ')'
+      ).to.equal(testInstallPkgName)
+
+      expect(
+        unpmLocal.packages[testInstallPkgName].version,
+        'unpm-local.json should contain an entry for the test package ('
+        + testInstallPkgName
+        + ') with version matching the installed (node_modules) package version'
+      ).to.equal(testInstallPkg.version)
 
     })
 
