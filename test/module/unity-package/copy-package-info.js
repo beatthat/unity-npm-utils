@@ -84,6 +84,13 @@ describe.only("unityPackage.copyPackageInfo", () => {
         + ') with version matching the installed (node_modules) package version'
       ).to.equal(testInstallPkg.version)
 
+      expect(
+        unpmLocal.packages[testInstallPkgName].repository.url,
+        'unpm-local.json should contain an entry for the test package ('
+        + testInstallPkgName
+        + ') with repository url matching the installed (node_modules) package repository url'
+      ).to.equal(testInstallPkg.repository.url)
+
     })
 
 });
