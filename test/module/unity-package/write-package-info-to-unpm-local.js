@@ -6,10 +6,10 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
-describe.only("unityPackage.copyPackageInfo", () => {
+describe("unityPackage.writePackageInfoToUnpmLocal", () => {
 
     /**
-     * test that copyPackageInfo can take an arbitrary installed package
+     * test that writePackageInfoToUnpmLocal can take an arbitrary installed package
      * and write the details of that package to the file unpm-local.json
      */
     it("- copies info required to install a package to unity from node_modules to unpm-packages.json", async function() {
@@ -57,7 +57,7 @@ describe.only("unityPackage.copyPackageInfo", () => {
       // and follow up with some tests/expectations
       ///////////////////////////////////////////////////////////
 
-      await unpm.copyPackageInfo(testProjPath, testInstallPkgName)
+      await unpm.writePackageInfoToUnpmLocal(testProjPath, testInstallPkgName)
 
       const unpmLocalPath = path.join(testProjPath, "unpm-local.json")
 
