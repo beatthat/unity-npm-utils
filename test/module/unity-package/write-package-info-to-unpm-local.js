@@ -57,7 +57,9 @@ describe("unityPackage.writePackageInfoToUnpmLocal", () => {
       // and follow up with some tests/expectations
       ///////////////////////////////////////////////////////////
 
-      await unpm.writePackageInfoToUnpmLocal(testProjPath, testInstallPkgName)
+      await unpm.writePackageInfoToUnpmLocal(testInstallPkgName, {
+        project_root: testProjPath
+      })
 
       const unpmLocalPath = path.join(testProjPath, "unpm-local.json")
 
