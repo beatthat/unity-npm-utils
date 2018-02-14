@@ -2,6 +2,7 @@
 const expect = require('chai').expect
 const Repo = require('git-tools')
 const path = require('path')
+const fs = require('fs-extra-promise')
 
 const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
@@ -22,21 +23,42 @@ describe("git.cloneOrPullInstallPackage - clones or updates an external git clon
     it("creates a new clone under the user's home directory by default", async function() {
         this.timeout(30000);
 
-        const pkgToClone = 'unity-npm-utils'; // cause we know it's already installed in templatePkgPath
-        const pkgToClonePath = path.join(templatePkgPath, 'node_modules', pkgToClone);
+        const testProjPath = await h.installLocalUnpmToPackage()
 
-        const info = await unpm.git.cloneOrPullInstalledPackage(pkgToClonePath)
+        expect(
+          fs.existsSync(path.join(testProjPath, 'package.json')),
+          'test project should be installed at root ' + testProjPath
+        ).to.equal(true)
 
-        const clonePkg = h.readPackageSync(info.clone_package_path);
-        expect(clonePkg.name, 'clone package has name set').to.equal(pkgToClone);
+        var testProj = await unpm.readPackage(testProjPath)
+
+        expect(
+          testProj.dependencies['unity-npm-utils']
+        ).to.exist
+
+        ////////////////////////////////////////////////////////////////////
+        // Now let's install a random unity package ('beatthat/properties' for this example)
+        // This is the package we will test against further down
+        ////////////////////////////////////////////////////////////////////
+
+        const pkgToCloneFullName = "beatthat/properties"
+        const pkgToClone = "properties"
+
+        await h.runPkgCmdAsync('npm install --save ' + pkgToCloneFullName, testProjPath)
+
+        const info = await unpm.git.cloneOrPullInstalledPackage(pkgToClone, { project_root: testProjPath })
+
+        const clonePkg = h.readPackageSync(info.clone_package_path)
+        expect(clonePkg.name, 'clone package has name set').to.equal(pkgToClone)
 
         const repo = new Repo(info.clone_package_path)
 
         expect(await repo.isRepo(), `should be a repo at path ${repo.path}`).to.equal(true)
 
-        const status = await repo.exec('status', '--short');
+        const status = await repo.exec('status', '--short')
 
         expect(status.trim().length, 'git status should show no local changes').to.equal(0)
     });
+
 
 });

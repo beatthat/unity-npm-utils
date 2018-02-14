@@ -248,6 +248,17 @@ const installUnityPackageTemplateToTemp = async (opts) => {
 
 }
 
+/**
+ * Many tests require a (tmp/test) unity project
+ * that has unity-npm-utils installed (the local version we're testing)
+ * as well as maybe some other package[s]
+ *
+ * @param {array} opts.install_packages array of packages to install
+ */
+// const createTmpUnityProjectWithPackagesInstalled = async(opts) => {
+//
+// }
+
 const readPackageSync = (pkgPath) => {
     // don't use require because it will cache and we're here editting package.json
     return JSON.parse(fs.readFileSync(path.join(pkgPath, 'package.json')));
