@@ -8,7 +8,7 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 
 
-describe("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
+describe("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
     var templatePkgPath = null;
 
     beforeEach(async function() {
@@ -20,7 +20,7 @@ describe("git.cloneOrPullInstallPackage - clones or updates an external git clon
         })
     });
 
-    it("creates a new clone under the user's home directory by default", async function() {
+    it("copies files newly created in unity install back to copyFromUnityInstallToClone", async function() {
         this.timeout(30000);
 
         const testProjPath = await h.installLocalUnpmToPackage()
@@ -46,7 +46,10 @@ describe("git.cloneOrPullInstallPackage - clones or updates an external git clon
 
         await h.runPkgCmdAsync('npm install --save ' + pkgToCloneFullName, testProjPath)
 
-        const info = await unpm.git.cloneOrPullInstalledPackage(pkgToClone, { project_root: testProjPath })
+        const info = await unpm.git.copyPackageUnityToClone(pkgToClone, {
+            project_root: testProjPath,
+            overwrite: true
+        })
 
         const clonePkg = h.readPackageSync(info.clone_package_path)
         expect(clonePkg.name, 'clone package has name set').to.equal(pkgToClone)
