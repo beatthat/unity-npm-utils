@@ -2,8 +2,8 @@ const expect = require('chai').expect
 const fs = require('fs-extra-promise')
 const path = require('path')
 
-const h = require('../../test-helpers.js')
-const unpm = require('../../../lib/unity-npm-utils')
+const h = require('../test-helpers.js')
+const unpm = require('../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
 describe("unityPackage.writePackageInfoToUnpmLocal", () => {
@@ -58,7 +58,13 @@ describe("unityPackage.writePackageInfoToUnpmLocal", () => {
       ///////////////////////////////////////////////////////////
 
       await unpm.writePackageInfoToUnpmLocal(testInstallPkgName, {
-        project_root: testProjPath
+        project_root: testProjPath,
+        transform_package: async(p) => {
+            return {
+                ...p,
+                added_by_transform_package: 'property_added_by_transform_package'
+            }
+        }
       })
 
       const unpmLocalPath = path.join(testProjPath, "unpm-local.json")
@@ -92,6 +98,11 @@ describe("unityPackage.writePackageInfoToUnpmLocal", () => {
         + testInstallPkgName
         + ') with repository url matching the installed (node_modules) package repository url'
       ).to.equal(testInstallPkg.repository.url)
+
+      expect(
+        unpmLocal.packages[testInstallPkgName].added_by_transform_package,
+        `the entry for ${testInstallPkgName} written to unpm-local.json should include changes made by the passed transform_package function`
+    ).to.equal('property_added_by_transform_package')
 
     })
 

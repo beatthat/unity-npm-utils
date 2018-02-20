@@ -3,22 +3,14 @@ const expect = require('chai').expect
 const Repo = require('git-tools')
 const path = require('path')
 const fs = require('fs-extra-promise')
+const tmp = require('tmp-promise')
 
 const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 
+const VERBOSE = false
 
 describe("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
-    var templatePkgPath = null;
-
-    beforeEach(async function() {
-        this.timeout(300000);
-
-        templatePkgPath = await h.installUnityPackageTemplateToTemp({
-            package_name: 'my-package-foo',
-            run_npm_install: true
-        })
-    });
 
     it("creates a new clone under the user's home directory by default", async function() {
         this.timeout(30000);
@@ -36,22 +28,45 @@ describe("git.cloneOrPullInstallPackage - clones or updates an external git clon
           testProj.dependencies['unity-npm-utils']
         ).to.exist
 
-        ////////////////////////////////////////////////////////////////////
-        // Now let's install a random unity package ('beatthat/properties' for this example)
-        // This is the package we will test against further down
-        ////////////////////////////////////////////////////////////////////
-
         const pkgToCloneFullName = "beatthat/properties"
         const pkgToClone = "properties"
 
         await h.runPkgCmdAsync('npm install --save ' + pkgToCloneFullName, testProjPath)
 
-        const info = await unpm.git.cloneOrPullInstalledPackage(pkgToClone, { project_root: testProjPath })
+        const tmpd = await tmp.dir()
+        const result = await unpm.git.cloneOrPullInstalledPackage(pkgToClone, {
+            project_root: testProjPath,
+            clone_dir: path.join(tmpd.path, 'clones'),
+            verbose: VERBOSE
+        })
 
-        const clonePkg = h.readPackageSync(info.clone_package_path)
+        if(VERBOSE) {
+            console.log(`result of cloneOrPullInstalledPackage(${pkgToClone}):\n ${JSON.stringify(result, null, 2)}`)
+        }
+
+        expect(typeof(result.unpmLocal),
+            "result should include the (updated) unpm-local file for the project, read to a json object"
+        ).to.equal('object')
+
+        expect(typeof(result.unpmLocal.packages),
+            "result unpmLocal should contain a 'packages' object"
+        ).to.equal('object')
+
+        const pkgEntry = result.unpmLocal.packages[pkgToClone]
+
+        expect(typeof(pkgEntry),
+            `result unpmLocal should contain a an entry for the cloned package (${pkgToClone})`
+        ).to.equal('object')
+
+        expect(typeof(pkgEntry.clone),
+            `result unpmLocal should contain a an entry for the cloned package (${pkgToClone}) with a 'clone' info object`
+        ).to.equal('object')
+
+
+        const clonePkg = h.readPackageSync(pkgEntry.clone.path)
         expect(clonePkg.name, 'clone package has name set').to.equal(pkgToClone)
 
-        const repo = new Repo(info.clone_package_path)
+        const repo = new Repo(pkgEntry.clone.path)
 
         expect(await repo.isRepo(), `should be a repo at path ${repo.path}`).to.equal(true)
 
