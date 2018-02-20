@@ -14,7 +14,7 @@ const pkgName = process.argv[2];
 
 const unityRoot = path.join(thisDir, '..', '..', '..');
 
-unpm.copyUnity2LinkedClone(unityRoot, pkgName, { overwrite : true, verbose: true }, (err) => {
+unpm.copyPackageUnityToClone(pkgName, { overwrite : true, verbose: true }, (err) => {
     if(err) {
         console.log('unity2clone-overwrite failed with error: %j', err);
         process.exit(1);
