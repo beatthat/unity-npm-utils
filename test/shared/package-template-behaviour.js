@@ -272,7 +272,7 @@ const updateTemplateBehaviour = (opts) => {
     })
 
     it("ensures 'npm run install:test' creates an example Unity project with the package installed", async function() {
-        this.timeout(30000);
+        this.timeout(300000);
 
         const testPkgJsonPath = path.join(pkgPath, 'test', 'package.json');
 

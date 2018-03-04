@@ -9,7 +9,7 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const VERBOSE = false
 
-describe.only("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
+describe("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
 
     it("clones the package outside the unity project", async function() {
         this.timeout(30000);

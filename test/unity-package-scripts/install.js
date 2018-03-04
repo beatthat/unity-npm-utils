@@ -8,6 +8,8 @@ const updateTemplateBehaviour = require('../shared/package-template-behaviour.js
 
 const pkgName = "my-pkg-foo";
 
+const VERBOSE = true
+
 
 describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v'
         : updates scripts and template files for an existing unity package`, () => {
@@ -23,7 +25,8 @@ describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./nod
         await fs.ensureDirAsync(pkgPath)
 
         this.test_config = {
-            package_path: pkgPath
+            package_path: pkgPath,
+            verbose: VERBOSE
         }
 
         await h.runPkgCmd('npm init --force', pkgPath)

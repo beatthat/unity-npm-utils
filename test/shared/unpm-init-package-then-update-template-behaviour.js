@@ -45,7 +45,7 @@ const updateTemplateBehaviour = (updateTemplate, opts) => {
     ];
 
     beforeEach(async function() {
-        this.timeout(300000);
+        this.timeout(30000);
 
         const test = this;
 
