@@ -6,6 +6,8 @@ const tmp = require('tmp-promise');
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
 
+const VERBOSE = false
+
 /**
  * Core setup and expected behaviours for updating the package template.
  *
@@ -15,11 +17,11 @@ const unpm = require('../../lib/unity-npm-utils');
  * @param {updateTemplate} updateTemplate
  *      callback to execute the update-template op however the tester defines it.
  *
- * @param {Boolean} options.install_required
+ * @param {Boolean} opts.install_required
  *      If true, will install the template package as part of beforeEach
  *
  */
-const updateTemplateBehaviour = (updateTemplate, options) => {
+const updateTemplateBehaviour = (updateTemplate, opts) => {
     const pkgName = "my-pkg-foo";
     var pkgPath = null;
     var pkgDistNameSet = null;
@@ -30,7 +32,7 @@ const updateTemplateBehaviour = (updateTemplate, options) => {
     var tmpPath = null;
     var pkgPath = null;
 
-    options = options || {};
+    opts = opts || {};
 
     const srcFiles = [{
             name: 'Foo.cs',
@@ -56,13 +58,20 @@ const updateTemplateBehaviour = (updateTemplate, options) => {
 
         await h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
 
+        if(VERBOSE) { console.log('init package completed...') }
+
         test.test_config = {
-            package_path: pkgPath
+            package_path: pkgPath,
+            verbose: VERBOSE
         };
 
-        await unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
+        if(VERBOSE) { console.log('will add source files...') }
 
-        if(!options.install_required) {
+        await unpm.unityPackage.addSrcFiles(pkgPath, srcFiles, { verbose: VERBOSE, ...opts })
+
+        if(VERBOSE) { console.log('add source files completed...') }
+
+        if(!opts.install_required) {
             return;
         }
 
@@ -70,7 +79,7 @@ const updateTemplateBehaviour = (updateTemplate, options) => {
     });
 
     require('./package-template-behaviour.js')({
-        ...options,
+        ...opts,
         update_template_function: updateTemplate,
         package_src_files: srcFiles
     });

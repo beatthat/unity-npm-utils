@@ -36,7 +36,7 @@ const removeNonTemplateScripts = (pkgPath) => {
  * See updateTemplateBehaviour below
  *
  * @callback updateTemplate
- * @param {string} options.package_path
+ * @param {string} opts.package_path
  *      abs path to the (tmp dir) where package should install for the test
  */
 
@@ -48,6 +48,10 @@ const requireConfig = (test, opt) => {
     return val;
 }
 
+const optionalConfig = (test, opt) => {
+    return test.test_config ? test.test_config[opt] : undefined
+}
+
 /**
  * Expected behaviours for updating the package template *after* package exists
  *
@@ -56,7 +60,7 @@ const requireConfig = (test, opt) => {
  *
  * NOTE: requires that calling test set
  *
- * @param {updateTemplate} options.update_template_function
+ * @param {updateTemplate} opts.update_template_function
  *      callback to execute the update-template op however the tester defines it.
  *
  * @param {string} this.test_config.package_path
@@ -64,11 +68,11 @@ const requireConfig = (test, opt) => {
  *      to the root of the test package.
  *
  */
-const updateTemplateBehaviour = (options) => {
+const updateTemplateBehaviour = (opts) => {
 
-    options = options || {};
+    opts = opts || {};
 
-    const updateTemplate = options.update_template_function;
+    const updateTemplate = opts.update_template_function;
     var pkgPath = null;
     var pkgBefore = null;
     var pkgName = null;
@@ -78,7 +82,7 @@ const updateTemplateBehaviour = (options) => {
     var templateScriptNames = null;
     var templateDependencyNames = null;
 
-    const srcFiles = options.package_src_files || [];
+    const srcFiles = opts.package_src_files || [];
 
     before(async function() {
         this.timeout(30000);
@@ -94,9 +98,16 @@ const updateTemplateBehaviour = (options) => {
     beforeEach(async function() {
         this.timeout(30000);
 
+        const verbose = optionalConfig(this, 'verbose')
+
+        if(verbose) { console.log(`will check required config 'package_path'...`) }
+
         if (!(pkgPath = requireConfig(this, 'package_path'))) {
             return;
         }
+
+
+        if(verbose) { console.log(`will retrieve package json from path ${pkgPath}...`) }
 
         const p = await unpm.readPackage(pkgPath)
         pkgBefore = p;

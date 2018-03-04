@@ -7,6 +7,7 @@ describe("'npm run template:update' - updates scripts and template files for an 
     updateTemplateBehaviour((opts) => {
         return h.runPkgCmd('npm run template:update', opts.package_path);
     }, {
-        install_required: true
+        install_required: true,
+        verbose: false
     });
 });
