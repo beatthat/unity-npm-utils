@@ -9,7 +9,7 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const VERBOSE = false
 
-describe("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
+describe.only("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
 
     it("clones the package outside the unity project", async function() {
         this.timeout(30000);
@@ -37,7 +37,6 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
         const result = await unpm.git.copyPackageUnityToClone(pkgToClone, {
             project_root: testProjPath,
             clone_dir: path.join(d.path, 'clones'),
-            overwrite: true,
             verbose: VERBOSE
         })
 
@@ -110,7 +109,6 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
 
         const result = await unpm.git.copyPackageUnityToClone(pkgToClone, {
             project_root: testProjPath,
-            overwrite: true,
             clone_dir: path.join(d.path, 'clones'),
             verbose: VERBOSE
         })
