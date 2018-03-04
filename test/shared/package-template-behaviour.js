@@ -104,7 +104,7 @@ const updateTemplateBehaviour = (options) => {
     });
 
     it("adds all template scripts to main package scripts", async function() {
-        this.timeout(300000);
+        this.timeout(30000);
 
         // wipe out existing scripts in installed package
         // so we can see that template-update will add them back
@@ -133,7 +133,7 @@ const updateTemplateBehaviour = (options) => {
     });
 
     it('preserves the name and scope of the pre-update package', async function() {
-        this.timeout(300000);
+        this.timeout(30000);
 
         const nameToKeep = "some-weird-name";
 
@@ -157,7 +157,7 @@ const updateTemplateBehaviour = (options) => {
     })
 
     it("combines scripts from template and pre-update package, preferring the template version", async function() {
-        this.timeout(300000);
+        this.timeout(30000);
 
         const pkgNoScripts = h.readPackageSync(pkgPath);
         var oldScripts = {
@@ -197,7 +197,7 @@ const updateTemplateBehaviour = (options) => {
     });
 
     it("combines dependencies from template and pre-update package, preferring the template version", async function() {
-        this.timeout(300000)
+        this.timeout(30000)
 
         const pkgNoDeps = h.readPackageSync(pkgPath);
         var oldDeps = {
@@ -239,7 +239,7 @@ const updateTemplateBehaviour = (options) => {
     })
 
     it("preserves source files from pre-update package", async function() {
-        this.timeout(300000);
+        this.timeout(30000);
 
         const pkgNoDeps = h.readPackageSync(pkgPath);
 
@@ -261,7 +261,7 @@ const updateTemplateBehaviour = (options) => {
     })
 
     it("ensures 'npm run install:test' creates an example Unity project with the package installed", async function() {
-        this.timeout(300000);
+        this.timeout(30000);
 
         const testPkgJsonPath = path.join(pkgPath, 'test', 'package.json');
 
