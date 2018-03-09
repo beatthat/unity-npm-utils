@@ -2,8 +2,8 @@ const expect = require('chai').expect
 const fs = require('fs-extra-promise')
 const path = require('path')
 
-const h = require('../test-helpers.js')
-const unpm = require('../../lib/unity-npm-utils')
+const h = require('../../test-helpers.js')
+const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
 describe("unityPackage.writePackageInfoToUnpmLocal", () => {
@@ -57,7 +57,7 @@ describe("unityPackage.writePackageInfoToUnpmLocal", () => {
       // and follow up with some tests/expectations
       ///////////////////////////////////////////////////////////
 
-      await unpm.writePackageInfoToUnpmLocal(testInstallPkgName, {
+      await unpm.unityProject.writePackageInfoToUnpmLocal(testInstallPkgName, {
         project_root: testProjPath,
         transform_package: async(p) => {
             return {
@@ -74,7 +74,7 @@ describe("unityPackage.writePackageInfoToUnpmLocal", () => {
         'unpm-local.json should have been written at ' + unpmLocalPath
       ).to.equal(true)
 
-      const unpmLocal = await await unpm.readUnpmLocal(testProjPath)
+      const unpmLocal = await await unpm.unityProject.readUnpmLocal(testProjPath)
 
       const testInstallPkg = await unpm.readPackage(
         path.join(testProjPath, 'node_modules', testInstallPkgName))

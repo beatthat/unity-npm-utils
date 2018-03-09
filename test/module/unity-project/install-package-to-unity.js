@@ -54,7 +54,7 @@ describe("unityPackage.installPackageToUnity", () => {
         "(having installed package with ignore-scripts) the package should NOT yet be installed to unity"
       ).to.equal(false)
 
-      await unpm.installPackageToUnity(testInstallPkgName, {
+      await unpm.unityProject.installPackageToUnity(testInstallPkgName, {
         project_root: testProjPath,
         verbose: true
       })

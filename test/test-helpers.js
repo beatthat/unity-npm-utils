@@ -224,17 +224,30 @@ const installUnityPackageTemplateToTemp = async (opts) => {
     const d = await tmp.dir()
     const installPath = path.join(d.path, opts.package_name || 'unpm-testpackage')
 
-    await unpm.unityPackage.installTemplate(installPath, {})
-
-    if (!opts.package_name) {
-        return installPath
+    if(opts.verbose) {
+      mlog.pending(`will call unpm.unityPackage.installTemplate on install path '${installPath}' with opts ${JSON.stringify(opts)}...`);
     }
 
-    await unpm.unityPackage.setPackageName(installPath, {
-        package_name: opts.package_name,
-        package_scope: opts.package_scope,
-        verbose: opts.verbose
-    })
+    await unpm.unityPackage.installTemplate(installPath, {...opts})
+
+    if(opts.verbose) {
+      mlog.pending(`unpm.unityPackage.installTemplate completed on install path '${installPath}'...`);
+    }
+
+    // if (!opts.package_name) {
+    //     return installPath
+    // }
+    //
+    // if(opts.verbose) {
+    //   mlog.pending(`unpm.unityPackage.installTemplate completed
+    //     on install path '${installPath}'...`);
+    // }
+    //
+    // await unpm.unityPackage.setPackageName(installPath, {
+    //     package_name: opts.package_name,
+    //     package_scope: opts.package_scope,
+    //     verbose: opts.verbose
+    // })
 
     const installCmd =
         opts.run_npm_install_no_scripts? 'npm install --no-scripts':
