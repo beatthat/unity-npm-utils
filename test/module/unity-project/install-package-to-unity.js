@@ -6,7 +6,7 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
-describe("unityPackage.installPackageToUnity", () => {
+describe("unityProject.installPackageToUnity", () => {
 
     /**
      * For a package that's already (npm) installed to node_modules,

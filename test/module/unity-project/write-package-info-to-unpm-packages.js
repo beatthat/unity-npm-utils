@@ -6,11 +6,11 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
-describe("unityProject.writePackageInfoToUnpmLocal", () => {
+describe("unityProject.writePackageInfoToUnpmPackages", () => {
 
     /**
      * test that writePackageInfoToUnpmLocal can take an arbitrary installed package
-     * and write the details of that package to the file unpm-local.json
+     * and write the details of that package to the file unpm-packages.json
      */
     it("- copies info required to install a package to unity from node_modules to unpm-packages.json", async function() {
       this.timeout(30000)
@@ -57,7 +57,7 @@ describe("unityProject.writePackageInfoToUnpmLocal", () => {
       // and follow up with some tests/expectations
       ///////////////////////////////////////////////////////////
 
-      await unpm.unityProject.writePackageInfoToUnpmLocal(testInstallPkgName, {
+      await unpm.unityProject.writePackageInfoToUnpmPackages(testInstallPkgName, {
         project_root: testProjPath,
         transform_package: async(p) => {
             return {
@@ -67,41 +67,41 @@ describe("unityProject.writePackageInfoToUnpmLocal", () => {
         }
       })
 
-      const unpmLocalPath = path.join(testProjPath, "unpm-local.json")
+      const unpmPkgsPath = path.join(testProjPath, "unpm-packages.json")
 
       expect(
-        await fs.existsAsync(unpmLocalPath),
-        'unpm-local.json should have been written at ' + unpmLocalPath
+        await fs.existsAsync(unpmPkgsPath),
+        'unpm-packages.json should have been written at ' + unpmPkgsPath
       ).to.equal(true)
 
-      const unpmLocal = await await unpm.unityProject.readUnpmLocal(testProjPath)
+      const unpmPkgs = await unpm.unityProject.readUnpmPackages(testProjPath)
 
       const testInstallPkg = await unpm.readPackage(
         path.join(testProjPath, 'node_modules', testInstallPkgName))
 
       expect(
-        unpmLocal.packages[testInstallPkgName].name,
-        'unpm-local.json should contain an entry for the test package ('
+        unpmPkgs.packages[testInstallPkgName].name,
+        'unpm-packages.json should contain an entry for the test package ('
         + testInstallPkgName + ')'
       ).to.equal(testInstallPkgName)
 
       expect(
-        unpmLocal.packages[testInstallPkgName].version,
-        'unpm-local.json should contain an entry for the test package ('
+        unpmPkgs.packages[testInstallPkgName].version,
+        'unpm-packages.json should contain an entry for the test package ('
         + testInstallPkgName
         + ') with version matching the installed (node_modules) package version'
       ).to.equal(testInstallPkg.version)
 
       expect(
-        unpmLocal.packages[testInstallPkgName].repository.url,
-        'unpm-local.json should contain an entry for the test package ('
+        unpmPkgs.packages[testInstallPkgName].repository.url,
+        'unpm-packages.json should contain an entry for the test package ('
         + testInstallPkgName
         + ') with repository url matching the installed (node_modules) package repository url'
       ).to.equal(testInstallPkg.repository.url)
 
       expect(
-        unpmLocal.packages[testInstallPkgName].added_by_transform_package,
-        `the entry for ${testInstallPkgName} written to unpm-local.json should include changes made by the passed transform_package function`
+        unpmPkgs.packages[testInstallPkgName].added_by_transform_package,
+        `the entry for ${testInstallPkgName} written to unpm-packages.json should include changes made by the passed transform_package function`
     ).to.equal('property_added_by_transform_package')
 
     })

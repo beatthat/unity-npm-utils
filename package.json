@@ -37,9 +37,8 @@
         "app-root-path": "^2.0.1",
         "child-process": "^1.0.2",
         "command-line-args": "^4.0.7",
-        "commander": "^2.11.0",
+        "commander": "^2.15.0",
         "dateformat": "^3.0.2",
-        "decompress": "^4.2.0",
         "delay": "^2.0.0",
         "download-git-repo": "^1.0.2",
         "es6-promisify": "^5.0.0",
@@ -58,8 +57,7 @@
         "shell-escape": "^0.2.0",
         "smart-spawn": "^2.0.1",
         "tmp": "0.0.33",
-        "tmp-promise": "^1.0.3",
-        "unzip": "^0.1.11"
+        "tmp-promise": "^1.0.3"
     },
     "engines": {
         "node": "*"
