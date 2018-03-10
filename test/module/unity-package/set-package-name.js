@@ -5,9 +5,9 @@ const fs = require('fs-extra-promise')
 const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 
-const VERBOSE = true
+const VERBOSE = false
 
-describe.only("unityPackage.setPackageName - sets package.name and updates all name-dependent aspects of a unity package", () => {
+describe("unityPackage.setPackageName - sets package.name and updates all name-dependent aspects of a unity package", () => {
     var pkgPath = null
 
     beforeEach(async function() {
@@ -68,19 +68,12 @@ describe.only("unityPackage.setPackageName - sets package.name and updates all n
         const cannonicalPkgName = 'my-new-pkg-name'
         const cannonicalPkgScope = 'my-pkg-scope'
 
-        console.log("BEFORE SET PACKAGE NAME")
         await unpm.unityPackage.setPackageName(pkgPath, {
             package_name: newPkgName,
             package_scope: newPkgScope
         })
 
-                console.log("AFTER SET PACKAGE NAME")
-
-                                console.log("BEFORE readPackageSync")
         const pkgWritten = h.readPackageSync(pkgPath)
-
-
-                        console.log("AFTER readPackageSync")
 
         expect(pkgWritten.repository.type, 'should have written repository type as git').to.equal('git');
         expect(pkgWritten.repository.url, 'should have written repository type as github url').to.equal(

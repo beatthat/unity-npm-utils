@@ -21,9 +21,9 @@ describe("unityPackage.installTemplate - installs a the unity-package template t
             `package.json should exist in install path ${pkgPath}`).to.equal(true)
     })
 
-    it("sets initial version to 0.0.1", () => {
+    it("sets initial version to 1.0.0", () => {
         const pkg = h.readPackageSync(pkgPath)
-        expect(pkg.version).to.equal('0.0.1')
+        expect(pkg.version).to.equal('1.0.0')
     })
 
     it("sets package name to install dir name by default", () => {
