@@ -1,7 +1,7 @@
 {
     "name": "unity-npm-utils",
     "scope": "ape",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "utils for using npm as a package manager for unity",
     "repository": {
         "type": "git",
