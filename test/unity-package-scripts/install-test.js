@@ -29,6 +29,16 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
 
         await unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
 
+        await h.installLocalUnpmToPackage(pkgPath)
+
+        // change unity-unpm-utils to a bundled dependency in the fake/test package so we it will use the local version we're testing
+        await unpm.transformPackage({
+            package_path: pkgPath,
+            transformAsync: async (p) => {
+                return { ...p, bundledDependencies: ['unity-npm-utils'] }
+            }
+        })
+
         await h.runPkgCmd('npm run install:test', pkgPath)
     });
 
@@ -36,7 +46,7 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
 
         const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgNameFoo);
 
-        expect(await fs.existsAsync(unityPkgPath), `Plugin folder name matches package name ${unityPkgPath}`).to.equal(true);
+        expect(await fs.existsAsync(unityPkgPath), `src for plugin copied to unity at path ${unityPkgPath}`).to.equal(true);
     });
 
 });

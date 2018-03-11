@@ -201,10 +201,18 @@ const installLocalUnpmToPackage = async (pkgPath, opts) => {
 
   await runPkgCmdAsync('npm pack', unpmRoot)
 
-  const unpmTarPath = path.join(unpmRoot,
-    unpmPkg.name + '-' + unpmPkg.version + '.tgz')
+  const unpmTarName = `${unpmPkg.name}-${unpmPkg.version}.tgz`;
+  const unpmSourcePath = path.join(unpmRoot, unpmTarName)
+  const unpmTargetDir = path.join(pkgPath, 'localpackage')
 
-  await runPkgCmdAsync('npm install ' + unpmTarPath, pkgPath)
+  await fs.ensureDirAsync(unpmTargetDir)
+
+  const unpmTargetPath = path.join(unpmTargetDir, unpmTarName)
+
+  await fs.renameAsync(unpmSourcePath, unpmTargetPath)
+
+  // TODO: this is still not right with respect to install:test script in package. Need to change that script to bundle unity-unpm-utils instead of pack?
+  await runPkgCmdAsync(`npm install file:${path.join('localpackage', unpmTarName)}`, pkgPath)
 
   return pkgPath
 }
@@ -228,26 +236,11 @@ const installUnityPackageTemplateToTemp = async (opts) => {
       mlog.pending(`will call unpm.unityPackage.installTemplate on install path '${installPath}' with opts ${JSON.stringify(opts)}...`);
     }
 
-    await unpm.unityPackage.installTemplate(installPath, {...opts})
+    await unpm.unityPackage.installTemplate(installPath, {...opts })
 
     if(opts.verbose) {
       mlog.pending(`unpm.unityPackage.installTemplate completed on install path '${installPath}'...`);
     }
-
-    // if (!opts.package_name) {
-    //     return installPath
-    // }
-    //
-    // if(opts.verbose) {
-    //   mlog.pending(`unpm.unityPackage.installTemplate completed
-    //     on install path '${installPath}'...`);
-    // }
-    //
-    // await unpm.unityPackage.setPackageName(installPath, {
-    //     package_name: opts.package_name,
-    //     package_scope: opts.package_scope,
-    //     verbose: opts.verbose
-    // })
 
     const installCmd =
         opts.run_npm_install_no_scripts? 'npm install --no-scripts':
