@@ -31,14 +31,6 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
 
         await h.installLocalUnpmToPackage(pkgPath)
 
-        // change unity-unpm-utils to a bundled dependency in the fake/test package so we it will use the local version we're testing
-        await unpm.transformPackage({
-            package_path: pkgPath,
-            transformAsync: async (p) => {
-                return { ...p, bundledDependencies: ['unity-npm-utils'] }
-            }
-        })
-
         await h.runPkgCmd('npm run install:test', pkgPath)
     });
 
