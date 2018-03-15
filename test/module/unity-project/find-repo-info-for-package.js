@@ -6,6 +6,8 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
+const VERBOSE = true
+
 describe.only("unityProject.findRepoInfoForPackage", () => {
 
 
@@ -24,18 +26,18 @@ describe.only("unityProject.findRepoInfoForPackage", () => {
           path: testProjPath,
           file_name: 'unpm-packages.json',
           json_default: {
-              scopes: [
-                  {
-                      scope: 'ape',
-                      repo: {
-                          type: 'git',
-                          url_template: 'git+https://github.com/beatthat/{package_name}.git'
-                      },
-                      unity_install: {
-                          path_template: path.join('Assets', 'Plugins', 'packages', 'ape', '{package_name}')
-                      }
-                  }
-              ]
+              scopes: {
+                ape: {
+                    name: 'ape',
+                    repository: {
+                        type: 'git',
+                        url: 'git+https://github.com/beatthat/{package_name}.git'
+                    },
+                    install: {
+                        path: path.join('Assets', 'Plugins', 'packages', 'ape', '{package_name}')
+                    }
+                }
+              }
           },
           transformAsync: async (p) => {
               return p; // will just write json_default
@@ -44,7 +46,14 @@ describe.only("unityProject.findRepoInfoForPackage", () => {
 
       const unpmPackages = await unpm.readJson(testProjPath, { file_name: 'unpm-packages.json' })
 
-      console.log(`at path ${testProjPath} wrote ${JSON.stringify(unpmPackages, null, 2)}`)
+      const testPkgName = 'my-pkg-foo'
+      const repo = await unpm.unityProject.findRepoInfoForPackage(testPkgName, {
+        project_root: testProjPath,
+        package_install_path: path.join('Assets', 'Plugins', 'packages', 'ape', testPkgName),
+        verbose: VERBOSE
+      })
+
+      expect(repo.url).to.equal(`git+https://github.com/beatthat/${testPkgName}.git`)
     })
 
 })
