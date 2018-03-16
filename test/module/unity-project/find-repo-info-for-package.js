@@ -6,9 +6,9 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
-const VERBOSE = true
+const VERBOSE = false
 
-describe.only("unityProject.findRepoInfoForPackage", () => {
+describe("unityProject.findRepoInfoForPackage", () => {
 
 
     it("- can guess repo info when a package's scope is defined in unpm-package.json", async function() {

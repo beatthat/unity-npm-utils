@@ -49,7 +49,6 @@
         "giturl": "^1.0.0",
         "graceful-ncp": "^3.0.0",
         "home-or-tmp": "^3.0.0",
-        "messageformat": "^1.1.1",
         "mkdirp": "^0.5.1",
         "ncp": "^2.0.0",
         "request": "^2.83.0",
