@@ -10,7 +10,7 @@ const unpm = require('../../../lib/unity-npm-utils')
 
 const VERBOSE = false
 
-describe("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
+describe.only("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
 
     it("creates a new clone under the user's home directory by default", async function() {
         this.timeout(300000);
@@ -34,6 +34,7 @@ describe("git.cloneOrPullInstallPackage - clones or updates an external git clon
         await h.runPkgCmdAsync('npm install --save ' + pkgToCloneFullName, testProjPath)
 
         const tmpd = await tmp.dir()
+
         const result = await unpm.git.cloneOrPullInstalledPackage(pkgToClone, {
             project_root: testProjPath,
             clone_dir: path.join(tmpd.path, 'clones'),
