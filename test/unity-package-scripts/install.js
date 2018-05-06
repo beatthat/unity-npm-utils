@@ -8,7 +8,7 @@ const updateTemplateBehaviour = require('../shared/package-template-behaviour.js
 
 const pkgName = "my-pkg-foo";
 
-const VERBOSE = true
+const VERBOSE = false
 
 
 describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v'
