@@ -7,9 +7,9 @@ const tmp = require('tmp-promise')
 
 const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
-const VERBOSE = true
+const VERBOSE = false
 
-describe.only("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
+describe("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
 
     it("clones the package outside the unity project", async function() {
         this.timeout(300000);
@@ -75,7 +75,7 @@ describe.only("git.copyPackageUnityToClone - copies changes made in installed un
         expect(status.trim().length, 'git status should show no local changes').to.equal(0)
     });
 
-    it.skip("copies files newly created in unity install back to copyFromUnityInstallToClone", async function() {
+    it("copies files newly created in unity install back to copyFromUnityInstallToClone", async function() {
         this.timeout(300000);
 
         const testProjPath = await h.installLocalUnpmToPackage({
@@ -93,14 +93,14 @@ describe.only("git.copyPackageUnityToClone - copies changes made in installed un
           testProj.dependencies['unity-npm-utils']
         ).to.exist
 
+        const pkgToClone = "property-interfaces"
         const scope = "beatthat"
-        const pkgToClone = "properties"
-        const pkgToCloneFullName = "beatthat/properties"
+        const pkgToCloneFullName = `${scope}/${pkgToClone}`
 
         await h.runPkgCmdAsync('npm install --save ' + pkgToCloneFullName, testProjPath)
 
         const unityPkgInstallPath = path.join(testProjPath,
-            'Assets', 'Plugins', 'packages', 'beatthat', 'properti')
+            'Assets', 'Plugins', 'packages', scope, pkgToClone)
 
         expect(await fs.existsAsync(unityPkgInstallPath),
             "package is installed where we expect under Unity Assets")
