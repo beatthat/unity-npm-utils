@@ -7,12 +7,12 @@ const tmp = require('tmp-promise')
 
 const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
-const VERBOSE = false
+const VERBOSE = true
 
-describe("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
+describe.only("git.copyPackageUnityToClone - copies changes made in installed unity package back to a git clone", () => {
 
     it("clones the package outside the unity project", async function() {
-        this.timeout(30000);
+        this.timeout(300000);
 
         const testProjPath = await h.installLocalUnpmToPackage()
 
@@ -27,8 +27,9 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
           testProj.dependencies['unity-npm-utils']
         ).to.exist
 
-        const pkgToCloneFullName = "beatthat/properties"
-        const pkgToClone = "properties"
+        const pkgToClone = "property-interfaces"
+        const scope = "beatthat"
+        const pkgToCloneFullName = `${scope}/${pkgToClone}`
 
         await h.runPkgCmdAsync('npm install --save ' + pkgToCloneFullName, testProjPath)
 
@@ -65,13 +66,17 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
 
         expect(await repo.isRepo(), `should be a repo at path ${repo.path}`).to.equal(true)
 
+        if(VERBOSE) {
+            console.log(`checking repo at path ${repo.path}...`)
+        }
+
         const status = await repo.exec('status', '--short')
 
         expect(status.trim().length, 'git status should show no local changes').to.equal(0)
     });
 
-    it("copies files newly created in unity install back to copyFromUnityInstallToClone", async function() {
-        this.timeout(30000);
+    it.skip("copies files newly created in unity install back to copyFromUnityInstallToClone", async function() {
+        this.timeout(300000);
 
         const testProjPath = await h.installLocalUnpmToPackage({
             verbose: VERBOSE
@@ -88,13 +93,14 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
           testProj.dependencies['unity-npm-utils']
         ).to.exist
 
-        const pkgToCloneFullName = "beatthat/properties"
+        const scope = "beatthat"
         const pkgToClone = "properties"
+        const pkgToCloneFullName = "beatthat/properties"
 
         await h.runPkgCmdAsync('npm install --save ' + pkgToCloneFullName, testProjPath)
 
         const unityPkgInstallPath = path.join(testProjPath,
-            'Assets', 'Plugins', 'packages', 'ape', 'properties')
+            'Assets', 'Plugins', 'packages', 'beatthat', 'properti')
 
         expect(await fs.existsAsync(unityPkgInstallPath),
             "package is installed where we expect under Unity Assets")

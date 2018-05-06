@@ -10,7 +10,7 @@ const unpm = require('../../../lib/unity-npm-utils')
 
 const VERBOSE = false
 
-describe.only("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
+describe("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
 
     it("creates a new clone under the user's home directory by default", async function() {
         this.timeout(300000);
@@ -68,6 +68,10 @@ describe.only("git.cloneOrPullInstallPackage - clones or updates an external git
         expect(clonePkg.name, 'clone package has name set').to.equal(pkgToClone)
 
         const repo = new Repo(pkgEntry.clone.path)
+
+        if(VERBOSE) {
+            console.log(`checking repo at path ${repo.path}...`)
+        }
 
         expect(await repo.isRepo(), `should be a repo at path ${repo.path}`).to.equal(true)
 
