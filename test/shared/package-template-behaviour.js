@@ -261,7 +261,7 @@ const updateTemplateBehaviour = (opts) => {
 
         const pkgAfter = h.readPackageSync(pkgPath)
 
-        const srcRoot = path.join(pkgPath, 'src', pkgBefore.name)
+        const srcRoot = path.join(pkgPath, 'Runtime', pkgBefore.name)
         expect(fs.existsSync(srcRoot)).to.equal(true)
 
         srcFiles.forEach(f => {
@@ -271,7 +271,7 @@ const updateTemplateBehaviour = (opts) => {
         })
     })
 
-    it("ensures 'npm run install:test' creates an example Unity project with the package installed", async function() {
+    it.only("ensures 'npm run install:test' creates an example Unity project with the package installed", async function() {
         this.timeout(300000);
 
         const testPkgJsonPath = path.join(pkgPath, 'test', 'package.json');

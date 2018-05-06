@@ -139,7 +139,7 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
 
         expect(await repo.isRepo(), `should be a repo at path ${repo.path}`).to.equal(true)
 
-        const cloneAddFilePath = path.join(pkgEntry.clone.path, 'src', pkgToClone, testAddFileName)
+        const cloneAddFilePath = path.join(pkgEntry.clone.path, 'Runtime', pkgToClone, testAddFileName)
 
         expect(await fs.existsAsync(cloneAddFilePath),
             "should have copied file added to unity from install path in unity to clone"

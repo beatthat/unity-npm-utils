@@ -108,7 +108,7 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, unityFi
 
     await copy2Src({ package_path: pkgPath });
 
-    const pkgSrcRoot = path.join(pkgPath, 'src', pkgName);
+    const pkgSrcRoot = path.join(pkgPath, 'Runtime', pkgName);
 
     const pkgChanges = unityFiles.map(async f =>
         await fs.readFileAsync(path.join(pkgSrcRoot, f.name), 'utf8')

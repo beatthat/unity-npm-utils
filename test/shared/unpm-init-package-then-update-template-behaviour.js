@@ -22,7 +22,7 @@ const VERBOSE = false
  *
  */
 const updateTemplateBehaviour = (updateTemplate, opts) => {
-    const pkgName = "my-pkg-foo";
+    const pkgName = "my-test-pkg";
     var pkgPath = null;
     var pkgDistNameSet = null;
     var distDepNames = null;
@@ -49,16 +49,23 @@ const updateTemplateBehaviour = (updateTemplate, opts) => {
 
         const test = this;
 
-        const d = await tmp.dir()
+        // const d = await tmp.dir()
+        //
+        // tmpPath = d.path;
+        // pkgPath = path.join(tmpPath, 'package-install');
+        //
+        // await fs.ensureDirAsync(pkgPath)
+        //
+        // await h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
+        //
+        // if(VERBOSE) { console.log('init package completed...') }
 
-        tmpPath = d.path;
-        pkgPath = path.join(tmpPath, 'package-install');
+        pkgPath = await h.installUnityPackageTemplateToTemp({
+            package_name: pkgName,
+            verbose: VERBOSE
+        })
 
-        await fs.ensureDirAsync(pkgPath)
-
-        await h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
-
-        if(VERBOSE) { console.log('init package completed...') }
+        await h.installLocalUnpmToPackage(pkgPath)
 
         test.test_config = {
             package_path: pkgPath,

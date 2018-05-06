@@ -6,6 +6,8 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
+const VERBOSE = true
+
 describe("unityProject.installPackageToUnity", () => {
 
     /**
@@ -56,7 +58,7 @@ describe("unityProject.installPackageToUnity", () => {
 
       await unpm.unityProject.installPackageToUnity(testInstallPkgName, {
         project_root: testProjPath,
-        verbose: true
+        verbose: VERBOSE
       })
 
       expect(

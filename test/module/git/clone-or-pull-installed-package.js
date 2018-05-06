@@ -13,7 +13,7 @@ const VERBOSE = false
 describe("git.cloneOrPullInstallPackage - clones or updates an external git clone for an installed package", () => {
 
     it("creates a new clone under the user's home directory by default", async function() {
-        this.timeout(30000);
+        this.timeout(300000);
 
         const testProjPath = await h.installLocalUnpmToPackage()
 
