@@ -1,11 +1,11 @@
-const expect = require('chai').expect;
-const path = require('path');
-const fs = require('fs-extra-promise');
-const mkdirp = require('mkdirp');
-const tmp = require('tmp');
+const expect = require('chai').expect
+const path = require('path')
+const fs = require('fs-extra-promise')
+const mkdirp = require('mkdirp')
+const tmp = require('tmp')
 
-const h = require('../test-helpers.js');
-const unpm = require('../../lib/unity-npm-utils');
+const h = require('../test-helpers.js')
+const unpm = require('../../lib/unity-npm-utils')
 
 /**
  * See updateTemplateBehaviour below
@@ -33,8 +33,8 @@ const unpm = require('../../lib/unity-npm-utils');
  */
 const copy2SrcBehaviour = (copy2Src, options) => {
 
-    const pkgName = "my-pkg-foo";
-    var pkgPath = null;
+    const pkgName = "my-pkg-foo"
+    var pkgPath = null
 
     const srcFilesBefore = [{
             name: 'Foo.cs',
@@ -44,10 +44,10 @@ const copy2SrcBehaviour = (copy2Src, options) => {
             name: 'Bar.cs',
             content: 'public class Bar {} '
         }
-    ];
+    ]
 
     beforeEach(async function() {
-        this.timeout(180000);
+        this.timeout(180000)
 
         pkgPath = await h.installUnityPackageTemplateToTemp({
             package_name: pkgName,
@@ -59,40 +59,40 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         await h.installLocalUnpmToPackage(pkgPath)
 
         await h.runPkgCmd('npm run install:test', pkgPath)
-    });
+    })
 
     it('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
 
-        this.timeout(10000);
+        this.timeout(10000)
 
         const unityFiles = [
             ...srcFilesBefore,
             { name: 'NewClass1.cs', content: 'public class NewClass1 {}' },
             { name: 'NewClass2.cs', content: 'public class NewClass2 {}' }
-        ];
-        unityFiles[0].content = 'public class Foo { // added code }';
-        unityFiles[1].content = 'public class Bar { // added code here too }';
+        ]
+        unityFiles[0].content = 'public class Foo { // added code }'
+        unityFiles[1].content = 'public class Bar { // added code here too }'
 
         await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, unityFiles)
     })
 
-    const expectDeletes = options.expect_deletes_from_package;
+    const expectDeletes = options.expect_deletes_from_package
     it(expectDeletes?
         'deletes package src files not present in the Unity test source':
         'does NOT delete package src files not present in the Unity test source', async function() {
 
-        this.timeout(10000);
+        this.timeout(10000)
 
-        const unityFiles = srcFilesBefore.slice(0, 1);
-        const deleteUnityFiles = srcFilesBefore.slice(1);
+        const unityFiles = srcFilesBefore.slice(0, 1)
+        const deleteUnityFiles = srcFilesBefore.slice(1)
 
         await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, unityFiles, deleteUnityFiles, expectDeletes)
-    });
+    })
 }
 
 const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, unityFiles, deleteUnityFiles, expectDeletes) => {
 
-    const unitySrcRoot = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName);
+    const unitySrcRoot = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName)
 
     const unityChanges = unityFiles.map(async f =>
         await fs.writeFileAsync(path.join(unitySrcRoot, f.name), f.content)
@@ -106,33 +106,33 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, unityFi
 
     await Promise.all(unityChanges)
 
-    await copy2Src({ package_path: pkgPath });
+    await copy2Src({ package_path: pkgPath })
 
-    const pkgSrcRoot = path.join(pkgPath, 'Runtime', pkgName);
+    const pkgSrcRoot = path.join(pkgPath, 'Runtime', pkgName)
 
     const pkgChanges = unityFiles.map(async f =>
         await fs.readFileAsync(path.join(pkgSrcRoot, f.name), 'utf8')
-    );
+    )
 
     if(deleteUnityFiles) {
         deleteUnityFiles.forEach(f => {
             pkgChanges.push(new Promise((resolve, reject) => {
-                const fpath = path.join(pkgSrcRoot, f.name);
+                const fpath = path.join(pkgSrcRoot, f.name)
                 fs.existsAsync(path.join(pkgSrcRoot, f.name))
                 .then(deletedFileStillExistsInPkg => {
                     expect(deletedFileStillExistsInPkg, expectDeletes?
                         `${fpath} should be deleted from package source because it is not present in unity test source`:
                         `${fpath} should NOT be deleted because overwrite option isn't set for this copy`
-                    ).to.not.equal(expectDeletes);
-                    resolve();
+                    ).to.not.equal(expectDeletes)
+                    resolve()
                 })
                 .catch(e => reject(e))
-            }));
-        });
+            }))
+        })
     }
 
     await Promise.all(pkgChanges)
 }
 
 
-module.exports = copy2SrcBehaviour;
+module.exports = copy2SrcBehaviour
