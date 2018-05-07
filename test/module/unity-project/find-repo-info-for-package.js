@@ -27,14 +27,14 @@ describe("unityProject.findRepoInfoForPackage", () => {
           file_name: 'unpm-packages.json',
           json_default: {
               scopes: {
-                ape: {
-                    name: 'ape',
+                beatthat: {
+                    name: 'beatthat',
                     repository: {
                         type: 'git',
                         url: 'git+https://github.com/beatthat/{package_name}.git'
                     },
                     install: {
-                        path: path.join('Assets', 'Plugins', 'packages', 'ape', '{package_name}')
+                        path: path.join('Assets', 'Plugins', 'packages', 'beatthat', '{package_name}')
                     }
                 }
               }
@@ -49,7 +49,7 @@ describe("unityProject.findRepoInfoForPackage", () => {
       const testPkgName = 'my-pkg-foo'
       const repo = await unpm.unityProject.findRepoInfoForPackage(testPkgName, {
         project_root: testProjPath,
-        package_install_path: path.join('Assets', 'Plugins', 'packages', 'ape', testPkgName),
+        package_install_path: path.join('Assets', 'Plugins', 'packages', 'beatthat', testPkgName),
         verbose: VERBOSE
       })
 

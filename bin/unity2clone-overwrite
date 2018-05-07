@@ -1,25 +1,27 @@
 #!/usr/bin/env node
 
-"use strict";
-const path = require('path');
-const thisDir = __dirname;
-const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'));
+"use strict"
+const path = require('path')
+const thisDir = __dirname
+const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'))
+
+const VERBOSE = true
 
 if(process.argv.length < 3) {
-    console.log('usage: unity2clone-overwrite package_name');
-    process.exit(1);
+    console.log('usage: unity2clone-overwrite package_name')
+    process.exit(1)
 }
 
-const pkgName = process.argv[2];
+const pkgName = process.argv[2]
 
-const unityRoot = path.join(thisDir, '..', '..', '..');
+const unityRoot = path.join(thisDir, '..', '..', '..')
 
-unpm.git.copyPackageUnityToClone(pkgName, { overwrite : true, verbose: true }, (err) => {
-    if(err) {
-        console.log('unity2clone-overwrite failed with error: %j', err);
-        process.exit(1);
-        return;
-    }
-
-    console.log('unity2clone-overwrite succeeded');
-});
+unpm.git.copyPackageUnityToClone(pkgName, {
+    overwrite : true,
+    verbose: VERBOSE
+})
+.then(ok => console.log('unity2clone-overwrite succeeded'))
+.catch(err => {
+    console.log(`unity2clone-overwrite failed with error: ${err}:\n${err.stack}`)
+    process.exit(1)
+})
