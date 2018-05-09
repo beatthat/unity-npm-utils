@@ -8,7 +8,7 @@ const appRoot = require('app-root-path').path
 
 const VERBOSE = true
 
-describe("unityProject.installPackageToUnity", () => {
+describe.only("unityProject.installPackageToUnity", () => {
 
     /**
      * For a package that's already (npm) installed to node_modules,
@@ -16,7 +16,7 @@ describe("unityProject.installPackageToUnity", () => {
      * (typically just the source).
      */
     it("installs a package (already installed to node_modules) to unity Assets", async function() {
-      this.timeout(30000)
+      this.timeout(300000)
 
       const unpmPkg = await unpm.readPackage(appRoot)
 
@@ -44,28 +44,42 @@ describe("unityProject.installPackageToUnity", () => {
       // This is the package we will test against further down
       ////////////////////////////////////////////////////////////////////
 
-      const testInstallPkgFullName = "beatthat/properties"
-      const testInstallPkgName = "properties"
+      const testPkgName = "placements"
+      const testPkgScope = "beatthat"
+      const testPkgFullName = `${testPkgScope}/${testPkgName}`
 
-      await h.runPkgCmdAsync('npm install --save --ignore-scripts ' + testInstallPkgFullName, testProjPath)
+      await h.runPkgCmdAsync('npm install --save --ignore-scripts ' + testPkgFullName, testProjPath)
 
       testProj = await unpm.readPackage(testProjPath)
 
+      const testPkgInstallPath = path.join(testProjPath, 'Assets', 'Plugins', 'packages', testPkgScope, testPkgName)
+
       expect(
-        await fs.existsAsync(path.join(testProjPath, 'Assets', 'Plugins', 'packages', 'ape')),
+        await fs.existsAsync(testPkgInstallPath),
         "(having installed package with ignore-scripts) the package should NOT yet be installed to unity"
       ).to.equal(false)
 
-      await unpm.unityProject.installPackageToUnity(testInstallPkgName, {
+      const testPkgSamplesPath = path.join(testProjPath, 'Assets', 'Samples', 'packages', testPkgScope, testPkgName)
+
+      expect(
+        await fs.existsAsync(testPkgSamplesPath),
+        "(having installed package with ignore-scripts) the package's Samples should NOT yet be installed to unity"
+      ).to.equal(false)
+
+      await unpm.unityProject.installPackageToUnity(testPkgName, {
         project_root: testProjPath,
         verbose: VERBOSE
       })
 
       expect(
-        await fs.existsAsync(path.join(testProjPath, 'Assets', 'Plugins', 'packages', 'ape')),
-        "the package folder should be installed to unity"
+        await fs.existsAsync(testPkgInstallPath),
+        `the package folder should be installed to unity at ${testPkgInstallPath}`
       ).to.equal(true)
 
+      expect(
+        await fs.existsAsync(testPkgSamplesPath),
+        `the package Samples folder should be installed to unity ar ${testPkgSamplesPath}`
+      ).to.equal(true)
     })
 
 });

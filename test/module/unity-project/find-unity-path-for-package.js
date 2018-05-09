@@ -8,7 +8,7 @@ const appRoot = require('app-root-path').path
 
 const VERBOSE = false
 
-describe.only("unityProject.findUnityPathForPackage", () => {
+describe("unityProject.findUnityPathForPackage", () => {
 
 
     it("- can guess unity path when a package's scope is defined in unpm-package.json", async function() {
