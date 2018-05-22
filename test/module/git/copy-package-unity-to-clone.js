@@ -157,5 +157,10 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
 
     });
 
+    it.skip(`copies .meta files from unity project back to clone,
+      but preserves the guid on the clone side when one exists`, async function() {
+        expect(true).to.equal(false)
+      }
+    )
 
 });

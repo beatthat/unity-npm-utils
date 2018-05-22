@@ -8,7 +8,7 @@ const appRoot = require('app-root-path').path
 
 const VERBOSE = true
 
-describe.only("unityProject.installPackageToUnity", () => {
+describe("unityProject.installPackageToUnity", () => {
 
     /**
      * For a package that's already (npm) installed to node_modules,

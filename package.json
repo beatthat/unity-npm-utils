@@ -51,6 +51,7 @@
         "home-or-tmp": "^3.0.0",
         "mkdirp": "^0.5.1",
         "ncp": "^2.0.0",
+        "node-unity-guid-utils": "github:beatthat/node-unity-guid-utils",
         "request": "^2.85.0",
         "rimraf": "^2.6.2",
         "semver": "^5.4.1",
