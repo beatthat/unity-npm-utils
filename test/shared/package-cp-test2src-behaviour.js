@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const path = require('path')
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const mkdirp = require('mkdirp')
 const tmp = require('tmp')
 
@@ -61,7 +61,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         await h.runPkgCmd('npm run install:test', pkgPath)
     })
 
-    it('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
+    it.only('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
 
         this.timeout(10000)
 
@@ -95,12 +95,12 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, unityFi
     const unitySrcRoot = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName)
 
     const unityChanges = unityFiles.map(async f =>
-        await fs.writeFileAsync(path.join(unitySrcRoot, f.name), f.content)
+        await fs.writeFile(path.join(unitySrcRoot, f.name), f.content)
     )
 
     if(deleteUnityFiles) {
         deleteUnityFiles.forEach(async f =>
-            unityChanges.push(await fs.unlinkAsync(path.join(unitySrcRoot, f.name)))
+            unityChanges.push(await fs.unlink(path.join(unitySrcRoot, f.name)))
         )
     }
 
@@ -111,14 +111,14 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, unityFi
     const pkgSrcRoot = path.join(pkgPath, 'Runtime', pkgName)
 
     const pkgChanges = unityFiles.map(async f =>
-        await fs.readFileAsync(path.join(pkgSrcRoot, f.name), 'utf8')
+        await fs.readFile(path.join(pkgSrcRoot, f.name), 'utf8')
     )
 
     if(deleteUnityFiles) {
         deleteUnityFiles.forEach(f => {
             pkgChanges.push(new Promise((resolve, reject) => {
                 const fpath = path.join(pkgSrcRoot, f.name)
-                fs.existsAsync(path.join(pkgSrcRoot, f.name))
+                fs.exists(path.join(pkgSrcRoot, f.name))
                 .then(deletedFileStillExistsInPkg => {
                     expect(deletedFileStillExistsInPkg, expectDeletes?
                         `${fpath} should be deleted from package source because it is not present in unity test source`:
