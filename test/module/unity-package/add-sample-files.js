@@ -47,7 +47,7 @@ describe("unityPackage.addSampleFiles", () => {
 
         await unpm.unityPackage.addSampleFiles(pkgPath, sampleFiles)
 
-        const samplesPath = path.join(pkgPath, 'Samples', pkgName)
+        const samplesPath = path.join(pkgPath, 'Samples')
 
         for(var i in sampleFiles) {
           const testFilePath = path.join(samplesPath, sampleFiles[i].name)
