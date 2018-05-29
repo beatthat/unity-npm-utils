@@ -121,7 +121,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
     })
 
 
-    it.only('adds new Samples files created in the Unity project to pkg Samples and overwrites existing pkg-Samples files with changes made in the Unity project', async function() {
+    it('adds new Samples files created in the Unity project to pkg Samples and overwrites existing pkg-Samples files with changes made in the Unity project', async function() {
 
         this.timeout(10000)
 
@@ -138,7 +138,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
           unity_sample_files: sampleFiles
         })
 
-        const srcPath = path.join(pkgPath, 'Samples', pkgName)
+        const srcPath = path.join(pkgPath, 'Samples')
 
         for(var i in sampleFiles) {
           const testFilePath = path.join(srcPath, sampleFiles[i].name)
