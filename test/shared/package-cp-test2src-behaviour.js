@@ -47,12 +47,12 @@ const copy2SrcBehaviour = (copy2Src, options) => {
     ]
 
     const sampleFilesBefore = [{
-            name: 'Example.cs',
-            content: 'public class Example {}'
+            name: 'ExampleClass.cs',
+            content: 'public class ExampleClass {}'
         },
         {
-            name: 'Example.unity',
-            content: 'guid: example_unity_guid'
+            name: 'ExampleScene.unity',
+            content: 'ExampleScene content in unity'
         }
     ]
 
@@ -65,13 +65,14 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         })
 
         await unpm.unityPackage.addSrcFiles(pkgPath, srcFilesBefore)
+        await unpm.unityPackage.addSampleFiles(pkgPath, sampleFilesBefore)
 
         await h.installLocalUnpmToPackage(pkgPath)
 
         await h.runPkgCmd('npm run install:test', pkgPath)
     })
 
-    it('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
+    it.only('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
 
         this.timeout(10000)
 
@@ -86,7 +87,20 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, {
           unity_package_files: unityFiles
         })
-        //unityFiles)
+
+        const srcPath = path.join(pkgPath, 'Runtime', pkgName)
+
+        for(var i in unityFiles) {
+          const testFilePath = path.join(srcPath, unityFiles[i].name)
+
+          expect(await fs.exists(testFilePath),
+            `should gave created file at path '${testFilePath}'`
+          ).to.equal(true)
+
+          expect((await fs.readFile(testFilePath, 'utf8')).trim(),
+            `${testFilePath} should have content matching what was passed to addSrcFiles`
+          ).to.equal(unityFiles[i].content.trim())
+        }
     })
 
     const expectDeletes = options.expect_deletes_from_package
@@ -104,27 +118,28 @@ const copy2SrcBehaviour = (copy2Src, options) => {
           unity_package_delete_files: deleteUnityFiles,
           expect_deletes: expectDeletes
         })
-        //unityFiles, deleteUnityFiles, expectDeletes)
+    })
+
+
+    it('adds new Samples files created in the Unity project to pkg Samples and overwrites existing pkg-Samples files with changes made in the Unity project', async function() {
+
+        this.timeout(10000)
+
+        const sampleFiles = [
+            ...sampleFilesBefore,
+            { name: 'NewExampleClass.cs', content: 'public class NewExampleClass {}' },
+            { name: 'NewExampleScene.unity', content: 'unity scene file content' },
+            { name: 'NewExampleScene.unity.meta', content: 'guid: unity_scene_file_guid' },
+        ]
+        sampleFiles[0].content = 'public class ExampleClass { // added code }'
+        sampleFiles[1].content = 'Example scene changed content'
+
+        await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, {
+          unity_sample_files: sampleFiles
+        })
     })
 }
 
-it('adds new Samples files created in the Unity project to pkg Samples and overwrites existing pkg-Samples files with changes made in the Unity project', async function() {
-
-    this.timeout(10000)
-
-    const unityFiles = [
-        ...srcFilesBefore,
-        { name: 'NewClass1.cs', content: 'public class NewClass1 {}' },
-        { name: 'NewClass2.cs', content: 'public class NewClass2 {}' }
-    ]
-    unityFiles[0].content = 'public class Foo { // added code }'
-    unityFiles[1].content = 'public class Bar { // added code here too }'
-
-    await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, {
-      unity_sample_files: unityFiles
-    })
-    //unityFiles)
-})
 
 const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) => { //unityFiles, deleteUnityFiles, expectDeletes) => {
 
