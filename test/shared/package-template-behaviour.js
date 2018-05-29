@@ -114,7 +114,7 @@ const updateTemplateBehaviour = (opts) => {
         pkgName = pkgBefore.name
     })
 
-    it.only("adds all template scripts to main package scripts", async function() {
+    it("adds all template scripts to main package scripts", async function() {
         this.timeout(30000)
 
         const verbose = optionalConfig(this, 'verbose')
