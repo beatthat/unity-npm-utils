@@ -72,7 +72,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         await h.runPkgCmd('npm run install:test', pkgPath)
     })
 
-    it.only('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
+    it('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
 
         this.timeout(10000)
 
@@ -137,6 +137,20 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, {
           unity_sample_files: sampleFiles
         })
+
+        const srcPath = path.join(pkgPath, 'Samples', pkgName)
+
+        for(var i in sampleFiles) {
+          const testFilePath = path.join(srcPath, sampleFiles[i].name)
+
+          expect(await fs.exists(testFilePath),
+            `should gave created file at path '${testFilePath}'`
+          ).to.equal(true)
+
+          expect((await fs.readFile(testFilePath, 'utf8')).trim(),
+            `${testFilePath} should have content matching what's in unity Assets after copy`
+          ).to.equal(sampleFiles[i].content.trim())
+        }
     })
 }
 
