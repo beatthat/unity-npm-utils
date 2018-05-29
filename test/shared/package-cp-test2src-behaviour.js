@@ -173,7 +173,14 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) =
         )
     }
 
-    await Promise.all(unityChanges)
+    const unitySampleFiles = opts.unity_sample_files || []
+    const unitySamplesRoot = path.join(pkgPath, 'test', 'Assets', 'Samples', 'packages', pkgName)
+
+    const unitySamplesChanges = unitySampleFiles.map(async f =>
+        await fs.writeFile(path.join(unitySamplesRoot, f.name), f.content)
+    )
+
+    await Promise.all([...unityChanges, ...unitySamplesChanges])
 
     await copy2Src({ package_path: pkgPath })
 
