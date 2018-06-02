@@ -2,7 +2,7 @@
 const expect = require('chai').expect
 const Repo = require('git-tools')
 const path = require('path')
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const tmp = require('tmp-promise')
 
 const h = require('../../test-helpers.js')

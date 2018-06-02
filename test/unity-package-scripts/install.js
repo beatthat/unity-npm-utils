@@ -1,4 +1,4 @@
-const fs = require('fs-extra-promise');
+const fs = require('fs-extra');
 const path = require('path');
 const tmp = require('tmp-promise');
 
@@ -22,7 +22,7 @@ describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./nod
         const d = await tmp.dir()
         const pkgPath = path.join(d.path, 'package-install');
 
-        await fs.ensureDirAsync(pkgPath)
+        await fs.ensureDir(pkgPath)
 
         this.test_config = {
             package_path: pkgPath,

@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const path = require('path')
 
 const h = require('../../test-helpers.js')
@@ -70,7 +70,7 @@ describe("unityProject.writePackageInfoToUnpmLocal", () => {
       const unpmLocalPath = path.join(testProjPath, "unpm-local.json")
 
       expect(
-        await fs.existsAsync(unpmLocalPath),
+        await fs.exists(unpmLocalPath),
         'unpm-local.json should have been written at ' + unpmLocalPath
       ).to.equal(true)
 

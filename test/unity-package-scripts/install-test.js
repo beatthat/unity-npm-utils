@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const path = require('path');
-const fs = require('fs-extra-promise');
+const fs = require('fs-extra');
 const tmp = require('tmp');
 
 const h = require('../test-helpers.js');
@@ -38,7 +38,7 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
 
         const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgNameFoo);
 
-        expect(await fs.existsAsync(unityPkgPath), `src for plugin copied to unity at path ${unityPkgPath}`).to.equal(true);
+        expect(await fs.exists(unityPkgPath), `src for plugin copied to unity at path ${unityPkgPath}`).to.equal(true);
     });
 
 });

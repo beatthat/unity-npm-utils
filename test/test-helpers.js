@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const path = require('path')
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const tmp = require('tmp-promise')
 const spawn = require('child_process').spawn
 const mlog = require('mocha-logger')
@@ -167,7 +167,7 @@ const createTmpPackageDir = async (opts) => {
   const d = await tmp.dir()
   const p = path.join(d.path, opts.package_name || 'unpm-testpackage')
 
-  await fs.ensureDirAsync(p)
+  await fs.ensureDir(p)
 
   if(opts.verbose) {
     console.log('created tmp package dir at %j', p)
@@ -181,7 +181,7 @@ const ensureTestPackage = async (pkgPath) => {
     pkgPath = await createTmpPackageDir()
   }
 
-  if(!await fs.existsAsync(path.join(pkgPath, 'package.json'))) {
+  if(!await fs.exists(path.join(pkgPath, 'package.json'))) {
     await runPkgCmdAsync('npm init --force', pkgPath)
   }
 
@@ -205,11 +205,11 @@ const installLocalUnpmToPackage = async (pkgPath, opts) => {
   const unpmSourcePath = path.join(unpmRoot, unpmTarName)
   const unpmTargetDir = path.join(pkgPath, 'localpackage')
 
-  await fs.ensureDirAsync(unpmTargetDir)
+  await fs.ensureDir(unpmTargetDir)
 
   const unpmTargetPath = path.join(unpmTargetDir, unpmTarName)
 
-  await fs.renameAsync(unpmSourcePath, unpmTargetPath)
+  await fs.rename(unpmSourcePath, unpmTargetPath)
 
   // TODO: this is still not right with respect to install:test script in package. Need to change that script to bundle unity-unpm-utils instead of pack?
   await runPkgCmdAsync(`npm install file:${path.join('localpackage', unpmTarName)}`, pkgPath)
@@ -323,14 +323,14 @@ const npmInstallPackageWithIgnoreScripts = async function(pkgName, pkgScope)
     const testPkgInstallPath = path.join(testProjPath, 'Assets', 'Plugins', 'packages', pkgScope, pkgName)
 
     expect(
-      await fs.existsAsync(testPkgInstallPath),
+      await fs.exists(testPkgInstallPath),
       "(having installed package with ignore-scripts) the package should NOT yet be installed to unity"
     ).to.equal(false)
 
     const testPkgSamplesPath = path.join(testProjPath, 'Assets', 'Samples', 'packages', pkgScope, pkgName)
 
     expect(
-      await fs.existsAsync(testPkgSamplesPath),
+      await fs.exists(testPkgSamplesPath),
       "(having installed package with ignore-scripts) the package's Samples should NOT yet be installed to unity"
     ).to.equal(false)
 
@@ -352,7 +352,7 @@ const readPackageSync = (pkgPath) => {
 
 const readPackageAsync = async (pkgPath) => {
     // don't use require because it will cache and we're here editting package.json
-    return JSON.parse(await fs.readFileAsync(path.join(pkgPath, 'package.json')))
+    return JSON.parse(await fs.readFile(path.join(pkgPath, 'package.json')))
 }
 
 exports.createTmpPackageDir = createTmpPackageDir

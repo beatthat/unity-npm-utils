@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const path = require('path')
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const mkdirp = require('mkdirp')
 const tmp = require('tmp')
 
@@ -66,7 +66,7 @@ describe("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path] : i
     it("fails when run on a non-empty directory", async function() {
         this.timeout(10000)
 
-        await fs.writeFileAsync(path.join(pkgPath, 'anyfile.txt'), 'any content')
+        await fs.writeFile(path.join(pkgPath, 'anyfile.txt'), 'any content')
 
         try {
             await h.runBinCmd(`unpm init-package -p ${pkgPath}`)

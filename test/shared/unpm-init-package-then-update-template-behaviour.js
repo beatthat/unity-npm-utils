@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const path = require('path');
-const fs = require('fs-extra-promise');
+const fs = require('fs-extra');
 const tmp = require('tmp-promise');
 
 const h = require('../test-helpers.js');
@@ -48,17 +48,6 @@ const updateTemplateBehaviour = (updateTemplate, opts) => {
         this.timeout(30000);
 
         const test = this;
-
-        // const d = await tmp.dir()
-        //
-        // tmpPath = d.path;
-        // pkgPath = path.join(tmpPath, 'package-install');
-        //
-        // await fs.ensureDirAsync(pkgPath)
-        //
-        // await h.runBinCmd(`unpm init-package --package-name ${pkgName} -p ${pkgPath}`)
-        //
-        // if(VERBOSE) { console.log('init package completed...') }
 
         pkgPath = await h.installUnityPackageTemplateToTemp({
             package_name: pkgName,

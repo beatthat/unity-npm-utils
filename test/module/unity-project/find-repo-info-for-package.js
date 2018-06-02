@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const path = require('path')
 
 const h = require('../../test-helpers.js')

@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const path = require('path')
 
 const h = require('../../test-helpers')
@@ -26,12 +26,12 @@ describe("unityProject.installPackageToUnity", () => {
       })
 
       expect(
-        await fs.existsAsync(pkgInfo.test_package_expected_unity_install_path),
+        await fs.exists(pkgInfo.test_package_expected_unity_install_path),
         `the package folder should be installed to unity at ${pkgInfo.test_package_expected_unity_install_path}`
       ).to.equal(true)
 
       expect(
-        await fs.existsAsync(pkgInfo.test_package_expected_unity_samples_path),
+        await fs.exists(pkgInfo.test_package_expected_unity_samples_path),
         `the package Samples folder should be installed to unity ar ${pkgInfo.test_package_expected_unity_samples_path}`
       ).to.equal(true)
     })
@@ -47,7 +47,7 @@ describe("unityProject.installPackageToUnity", () => {
 
         const pkgSamplesPath = path.join(pkgInfo.test_project_path, 'node_modules', pkgInfo.test_package_name, 'Samples')
 
-        await fs.removeAsync(pkgSamplesPath)
+        await fs.remove(pkgSamplesPath)
 
         await unpm.unityProject.installPackageToUnity(pkgInfo.test_package_name, {
           project_root: pkgInfo.test_project_path,
@@ -55,12 +55,12 @@ describe("unityProject.installPackageToUnity", () => {
         })
 
         expect(
-          await fs.existsAsync(pkgInfo.test_package_expected_unity_install_path),
+          await fs.exists(pkgInfo.test_package_expected_unity_install_path),
           `the package folder should be installed to unity at ${pkgInfo.test_package_expected_unity_install_path}`
         ).to.equal(true)
 
         expect(
-          await fs.existsAsync(pkgInfo.test_package_expected_unity_samples_path),
+          await fs.exists(pkgInfo.test_package_expected_unity_samples_path),
           `no Samples should be installed at ${pkgInfo.test_package_expected_unity_samples_path} because the Samples were deleted from the package source`
       ).to.equal(false)
     })

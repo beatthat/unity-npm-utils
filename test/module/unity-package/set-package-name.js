@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const path = require('path')
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 
 const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
@@ -100,7 +100,7 @@ describe("unityPackage.setPackageName - sets package.name and updates all name-d
         })
 
         const pkgSrcPath = path.join(pkgPath, 'Runtime', newPkgName)
-        const stats = await fs.statAsync(pkgSrcPath)
+        const stats = await fs.stat(pkgSrcPath)
         expect(stats.isDirectory()).to.equal(true)
     })
 
@@ -115,7 +115,7 @@ describe("unityPackage.setPackageName - sets package.name and updates all name-d
             verbose: false
         })
 
-        const stats = await fs.statAsync(path.join(pkgPath, 'Runtime', newPkgName_1))
+        const stats = await fs.stat(path.join(pkgPath, 'Runtime', newPkgName_1))
 
         expect(stats.isDirectory()).to.equal(true)
 
@@ -124,7 +124,7 @@ describe("unityPackage.setPackageName - sets package.name and updates all name-d
             verbose: false
         })
 
-        const stats_2 = await fs.statAsync(path.join(pkgPath, 'Runtime', newPkgName_2))
+        const stats_2 = await fs.stat(path.join(pkgPath, 'Runtime', newPkgName_2))
         expect(stats_2.isDirectory()).to.equal(true)
     })
 })

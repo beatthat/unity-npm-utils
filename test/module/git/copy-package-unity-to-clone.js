@@ -2,7 +2,7 @@
 const expect = require('chai').expect
 const Repo = require('git-tools')
 const path = require('path')
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const tmp = require('tmp-promise')
 
 const h = require('../../test-helpers.js')
@@ -102,14 +102,14 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
         const unityPkgInstallPath = path.join(testProjPath,
             'Assets', 'Plugins', 'packages', scope, pkgToClone)
 
-        expect(await fs.existsAsync(unityPkgInstallPath),
+        expect(await fs.exists(unityPkgInstallPath),
             "package is installed where we expect under Unity Assets")
 
         const testAddFileName = 'TestFile.txt'
         const testAddFilePath = path.join(unityPkgInstallPath, testAddFileName)
         const testAddFileContent = "Test that this content gets copied back to clone"
 
-        await fs.writeFileAsync(testAddFilePath, testAddFileContent)
+        await fs.writeFile(testAddFilePath, testAddFileContent)
 
         const d = await tmp.dir()
 
@@ -147,11 +147,11 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
 
         const cloneAddFilePath = path.join(pkgEntry.clone.path, 'Runtime', pkgToClone, testAddFileName)
 
-        expect(await fs.existsAsync(cloneAddFilePath),
+        expect(await fs.exists(cloneAddFilePath),
             "should have copied file added to unity from install path in unity to clone"
         ).to.equal(true)
 
-        expect(await fs.readFileAsync(cloneAddFilePath, 'utf8'),
+        expect(await fs.readFile(cloneAddFilePath, 'utf8'),
             "should have copied file added to unity from install path in unity to clone"
         ).to.equal(testAddFileContent)
 

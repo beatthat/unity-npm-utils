@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const fs = require('fs-extra-promise')
+const fs = require('fs-extra')
 const path = require('path')
 
 const h = require('../../test-helpers.js')
@@ -17,7 +17,7 @@ describe("unityPackage.installTemplate - installs a the unity-package template t
     it("installs template files", async () => {
         const packageJsonPath = path.join(pkgPath, 'package.json')
 
-        expect(await fs.existsAsync(packageJsonPath),
+        expect(await fs.exists(packageJsonPath),
             `package.json should exist in install path ${pkgPath}`).to.equal(true)
     })
 
