@@ -81,6 +81,7 @@ const updateTemplateBehaviour = (opts) => {
     var templateDist = null
     var templateScriptNames = null
     var templateDependencyNames = null
+    var templateKeywords = null
 
     const srcFiles = opts.package_src_files || []
 
@@ -93,6 +94,7 @@ const updateTemplateBehaviour = (opts) => {
         templateDist = p
         templateScriptNames = Object.getOwnPropertyNames(p.scripts || {})
         templateDependencyNames = Object.getOwnPropertyNames(p.dependencies || {})
+        templateKeywords = p.keywords
     })
 
     beforeEach(async function() {
@@ -252,6 +254,35 @@ const updateTemplateBehaviour = (opts) => {
                 `dependencies.${n} should have pre-update value`
             ).to.equal(oldDeps[n])
         })
+    })
+
+    it("combines keywords from template and pre-update package", async function() {
+        this.timeout(30000)
+
+        const pkgNoScripts = h.readPackageSync(pkgPath)
+        var keywordsBefore = ['k1', 'k3']
+
+        await unpm.transformPackage({
+            package_path: pkgPath,
+            transform: (p, cb) => {
+                p.keywords = keywordsBefore
+                cb(null, p)
+            }
+        })
+
+        await updateTemplate({
+            package_path: pkgPath
+        })
+
+        const pkgAfter = h.readPackageSync(pkgPath)
+
+        let keywordsAfter = [...pkgAfter.keywords]
+        keywordsAfter.sort()
+
+        let keywordsExpected = [...keywordsBefore, ...templateKeywords]
+        keywordsExpected.sort();
+
+        expect(keywordsAfter).to.deep.equal(keywordsBefore)
     })
 
     it("preserves source files from pre-update package", async function() {

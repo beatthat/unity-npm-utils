@@ -7,7 +7,7 @@ const unpm = require('../../../lib/unity-npm-utils')
 
 const VERBOSE = false
 
-describe.only("unityPackage.installTemplate - installs a the unity-package template to an empty directory", () => {
+describe("unityPackage.installTemplate - installs a the unity-package template to an empty directory", () => {
     var pkgPath = null
 
     before(async function() {
@@ -35,6 +35,14 @@ describe.only("unityPackage.installTemplate - installs a the unity-package templ
     it("sets package name to install dir name by default", () => {
         const pkg = h.readPackageSync(pkgPath)
         expect(pkg.name).to.equal(path.basename(pkgPath))
+
+    })
+
+    it("includes keywords defined in templte package.json", () => {
+        const pkg = h.readPackageSync(pkgPath)
+            expect(Array.isArray(pkg.keywords) && pkg.keywords.length > 0,
+            'keywords array should be defined and have some elements'
+        ).to.equal(true)
 
     })
 
