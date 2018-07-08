@@ -5,7 +5,7 @@ const path = require('path')
 const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 
-const VERBOSE = true
+const VERBOSE = false
 
 describe.only("unityPackage.installTemplate - installs a the unity-package template to an empty directory", () => {
     var pkgPath = null
@@ -59,24 +59,5 @@ describe.only("unityPackage.installTemplate - installs a the unity-package templ
 
     })
 
-    it("updates sampledev package.json to depend on freshly built copy of the package", async () => {
-
-        const pkg = h.readPackageSync(pkgPath)
-
-        const pkgTarFileName = `${pkg.name}-latest.tgz`
-
-        const sampledevPkgPath = path.join(pkgPath, 'sampledev', 'package.json')
-
-        expect(await fs.exists(sampledevPkgPath),
-            `sampledev package should exists at ${sampledevPkgPath}`
-        ).to.equal(true)
-
-        const sampledevPkg = h.readPackageSync(path.join(pkgPath, 'sampledev'))
-
-        expect((sampledevPkg.dependencies !== null && sampledevPkg.dependencies[pkg.name] === `../${pkgTarFileName}`),
-            `sampledev package should have dependency for ${pkg.name} pointed to newly build tar`
-        ).to.equal(true)
-
-    })
 
 })
