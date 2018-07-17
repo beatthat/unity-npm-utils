@@ -40,6 +40,7 @@
         "command-line-args": "^4.0.7",
         "commander": "^2.15.1",
         "dateformat": "^3.0.2",
+        "decompress": "^4.2.0",
         "delay": "^2.0.0",
         "download-git-repo": "^1.0.2",
         "es6-promisify": "^5.0.0",
