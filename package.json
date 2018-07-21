@@ -33,6 +33,7 @@
     },
     "dependencies": {
         "app-root-path": "^2.0.1",
+        "async": "^2.6.1",
         "chai-files": "^1.4.0",
         "child-process": "^1.0.2",
         "command-line-args": "^4.0.7",
@@ -58,7 +59,8 @@
         "shell-escape": "^0.2.0",
         "smart-spawn": "^2.0.1",
         "tmp": "0.0.33",
-        "tmp-promise": "^1.0.3"
+        "tmp-promise": "^1.0.3",
+        "yamljs": "^0.3.0"
     },
     "engines": {
         "node": "*"
