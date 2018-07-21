@@ -10,10 +10,8 @@
     "main": "./lib/unity-npm-utils",
     "bin": {
         "unpm": "./bin/unpm",
-        "unity2clone-overwrite": "./bin/unity2clone-overwrite",
-        "unity2pkg-overwrite": "./bin/unity2pkg-overwrite",
-        "mod-clone-pull": "./bin/mod-clone-pull",
-        "mod-clone-link": "./bin/mod-clone-link"
+        "overwrite2clone": "./bin/unity2clone-overwrite",
+        "overwrite2pkg": "./bin/unity2pkg-overwrite"
     },
     "files": [
         "lib",
