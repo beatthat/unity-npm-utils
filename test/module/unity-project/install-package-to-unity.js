@@ -37,7 +37,7 @@ describe("unityProject.installPackageToUnity", () => {
       ).to.equal(true)
     })
 
-    it.only(`preserves the guid of existing meta files under the target path,
+    it(`preserves the guid of existing meta files under the target path,
       otherwise replacing the target with the source`, async function() {
       this.timeout(300000)
 
