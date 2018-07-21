@@ -1,6 +1,6 @@
 {
     "name": "unity-npm-utils",
-    "scope": "ape",
+    "scope": "beatthat",
     "version": "1.0.58",
     "description": "utils for using npm as a package manager for unity",
     "repository": {
@@ -10,8 +10,8 @@
     "main": "./lib/unity-npm-utils",
     "bin": {
         "unpm": "./bin/unpm",
-        "overwrite2clone": "./bin/unity2clone-overwrite",
-        "overwrite2pkg": "./bin/unity2pkg-overwrite"
+        "overwrite2clone": "./bin/overwrite2clone",
+        "overwrite2src": "./bin/overwrite2src"
     },
     "files": [
         "lib",
