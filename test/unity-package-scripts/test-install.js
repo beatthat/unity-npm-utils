@@ -6,7 +6,7 @@ const tmp = require('tmp');
 const h = require('../test-helpers.js');
 const unpm = require('../../lib/unity-npm-utils');
 
-describe("'npm run install:test' - installs a package to its own 'test' Unity project for editting", () => {
+describe("'npm run test-install' - installs a package to its own 'test' Unity project for editting", () => {
     var pkgPath = null;
 
     const pkgNameFoo = "my-pkg-foo";
@@ -31,7 +31,7 @@ describe("'npm run install:test' - installs a package to its own 'test' Unity pr
 
         await h.installLocalUnpmToPackage(pkgPath)
 
-        await h.runPkgCmd('npm run install:test', pkgPath)
+        await h.runPkgCmd('npm run test-install', pkgPath)
     });
 
     it("installs under Plugins by default", async function() {

@@ -211,7 +211,7 @@ const installLocalUnpmToPackage = async (pkgPath, opts) => {
 
   await fs.rename(unpmSourcePath, unpmTargetPath)
 
-  // TODO: this is still not right with respect to install:test script in package. Need to change that script to bundle unity-unpm-utils instead of pack?
+  // TODO: this is still not right with respect to test-install script in package. Need to change that script to bundle unity-unpm-utils instead of pack?
   await runPkgCmdAsync(`npm install file:${path.join('localpackage', unpmTarName)}`, pkgPath)
 
   await unpm.transformPackage({

@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs-extra')
 const tmp = require('tmp')
 
 const h = require('../test-helpers.js')
@@ -92,7 +92,11 @@ const updateTemplateBehaviour = (opts) => {
 
         const p = await unpm.readPackage(templatePath)
         templateDist = p
-        templateScriptNames = Object.getOwnPropertyNames(p.scripts || {})
+
+        templateScriptNames = Object.getOwnPropertyNames(
+          p.scripts || {}
+        ).filter(n => n.match(/^[a-zA-Z_]/)) // don't include the comment script '//'
+
         templateDependencyNames = Object.getOwnPropertyNames(p.dependencies || {})
         templateKeywords = p.keywords
     })
@@ -307,7 +311,7 @@ const updateTemplateBehaviour = (opts) => {
         })
     })
 
-    it("ensures 'npm run install:test' creates an example Unity project with the package installed", async function() {
+    it.only("ensures 'npm run test-install' creates an example Unity project with the package installed", async function() {
         this.timeout(300000)
 
         const testPkgJsonPath = path.join(pkgPath, 'test', 'package.json')
@@ -320,15 +324,27 @@ const updateTemplateBehaviour = (opts) => {
             `after update, test package.json file exists at ${testPkgJsonPath}`
         ).to.equal(true)
 
-        await h.runPkgCmd('npm run install:test', pkgPath)
+        await h.runPkgCmd('npm run test-install', pkgPath)
 
         const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName)
 
-        srcFiles.forEach(f => {
-            const fpath = path.join(unityPkgPath, f.name)
-            expect(fs.existsSync(fpath), `src file installed at ${fpath}`).to.equal(true)
-            expect(fs.readFileSync(fpath, 'utf8'), `src file contents at ${fpath}=${f.content}`).to.equal(f.content)
-        })
+        for(let i = 0; i < srcFiles.length; i++) {
+
+          let f = srcFiles[i]
+
+          const fpath = path.join(unityPkgPath, f.name)
+
+          expect(
+            await fs.exists(fpath),
+            `src file installed at ${fpath}`
+          ).to.be.true
+
+          expect(
+            await fs.readFile(fpath, 'utf8'),
+            `src file contents at ${fpath}=${f.content}`
+          ).to.equal(f.content)
+
+        }
     })
 
 }

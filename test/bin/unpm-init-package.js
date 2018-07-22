@@ -51,7 +51,7 @@ describe("'[npm i -g unity-npm-utils &&] unpm init-package [-p install-path] : i
             expect(pkg.name).to.equal(pkgName)
             expect(fs.existsSync(srcPath), `should create a directory for source at ${srcPath}`).to.equal(true)
 
-            return h.runPkgCmd('npm run install:test', pkgPath)
+            return h.runPkgCmd('npm run test-install', pkgPath)
         })
         .then(testInstalled => {
             const unityPkgPath = path.join(pkgPath, 'test', 'Assets', 'Plugins', 'packages', pkgName)

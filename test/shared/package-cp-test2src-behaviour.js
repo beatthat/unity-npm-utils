@@ -69,7 +69,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
 
         await h.installLocalUnpmToPackage(pkgPath)
 
-        await h.runPkgCmd('npm run install:test', pkgPath)
+        await h.runPkgCmd('npm run test-install', pkgPath)
     })
 
     it('adds new files created in the Unity project to pkg src and overwrites existing pkg-src files with changes made in the Unity project', async function() {
