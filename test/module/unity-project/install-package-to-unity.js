@@ -171,4 +171,37 @@ describe("unityProject.installPackageToUnity", () => {
       ).to.equal(false)
     })
 
+    it("copies README and any README files to package install under Unity Assets", async function() {
+      this.timeout(300000)
+
+      const pkgInfo = await h.npmInstallPackageWithIgnoreScripts("defines", "beatthat")
+
+      await unpm.unityProject.installPackageToUnity(pkgInfo.test_package_name, {
+        project_root: pkgInfo.test_project_path,
+        verbose: VERBOSE
+      })
+
+      const readMePath = path.join(
+        pkgInfo.test_package_expected_unity_install_path,
+        'README.md'
+      )
+
+      expect(
+        await fs.exists(readMePath),
+        `the package README should be installed to unity at ${readMePath}`
+      ).to.equal(true)
+
+      const readMeFilesPath = path.join(
+        pkgInfo.test_package_expected_unity_install_path,
+        'readmefiles'
+      )
+
+      expect(
+        await fs.exists(readMeFilesPath) && (await fs.lstat(readMeFilesPath)).isDirectory(),
+        `the package readmefiles should be installed to unity at ${readMeFilesPath}`
+      ).to.equal(true)
+
+    })
+
+
 });
