@@ -7,6 +7,8 @@ const tmp = require('tmp')
 const h = require('../test-helpers.js')
 const unpm = require('../../lib/unity-npm-utils')
 
+const VERBOSE = false
+
 /**
  * See updateTemplateBehaviour below
  *
@@ -152,7 +154,38 @@ const copy2SrcBehaviour = (copy2Src, options) => {
           ).to.equal(sampleFiles[i].content.trim())
         }
     })
+
+    it.only('copies README and associated files from unity install back to root of package', async function() {
+
+        this.timeout(10000)
+
+        const readmeFiles = [
+            { name: 'README.md', content: 'overwritten README content' }
+        ]
+
+        await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, {
+          unity_package_files: readmeFiles
+        })
+
+        await expectAllFiles(pkgPath, readmeFiles)
+    })
 }
+
+const expectAllFiles = async (rootPath, data4Files) => {
+  for(var i in data4Files) {
+    const filePath = path.join(rootPath, data4Files[i].name)
+
+    expect(await fs.exists(filePath),
+      `should gave created file at path '${filePath}'`
+    ).to.be.true
+
+    expect((await fs.readFile(filePath, 'utf8')).trim(),
+      `${filePath} should have content matching what's in unity Assets after copy`
+    ).to.equal(data4Files[i].content.trim())
+  }
+}
+
+
 
 
 const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) => { //unityFiles, deleteUnityFiles, expectDeletes) => {
@@ -182,7 +215,7 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) =
 
     await Promise.all([...unityChanges, ...unitySamplesChanges])
 
-    await copy2Src({ package_path: pkgPath })
+    await copy2Src({ package_path: pkgPath, verbose: VERBOSE })
 
     const pkgSrcRoot = path.join(pkgPath, 'Runtime', pkgName)
 
