@@ -5,7 +5,7 @@ const path = require('path')
 const thisDir = __dirname
 const unpm = require(path.join(thisDir, '..', 'lib', 'unity-npm-utils.js'))
 
-const VERBOSE = true
+const VERBOSE = false
 
 if(process.argv.length < 3) {
     console.log('usage: unity2clone-overwrite package_name')
