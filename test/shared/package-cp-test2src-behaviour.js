@@ -161,10 +161,14 @@ const copy2SrcBehaviour = (copy2Src, options) => {
 
         const readmeFiles = [
             { name: 'README.md', content: 'overwritten README content' }
+
         ]
 
         await writeFilesToUnityThenCopy2Pkg(pkgPath, pkgName, copy2Src, {
-          unity_package_files: readmeFiles
+          unity_package_files: [
+            ...readmeFiles,
+            { name: 'README.md.meta', content: 'guid: something should not be copied back' }
+          ]
         })
 
         await expectAllFiles(pkgPath, readmeFiles)
