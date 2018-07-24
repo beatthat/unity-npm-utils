@@ -155,7 +155,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         }
     })
 
-    it('copies README and associated files from unity install back to root of package', async function() {
+    it.only('copies README and associated files from unity install back to root of package', async function() {
 
         this.timeout(10000)
 
@@ -168,6 +168,23 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         })
 
         await expectAllFiles(pkgPath, readmeFiles)
+
+        const runtimePath = path.join(pkgPath, 'Runtime', pkgName)
+
+        expect(
+          await fs.exists(runtimePath),
+          `tgt package Runtime directory should exist`
+        ).to.be.true
+
+        const runtimeFiles = await fs.readdir(runtimePath)
+
+        for(let i = 0; i < runtimeFiles.length; i++) {
+          expect(
+            String(runtimeFiles[i]).match(/^readme/i) === null,
+            `should not have copied readme file ${runtimeFiles[i]}
+              to package runtime at ${runtimePath}`
+          ).to.be.true
+        }
     })
 }
 
@@ -185,7 +202,7 @@ const expectAllFiles = async (rootPath, data4Files) => {
   }
 }
 
-const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) => { //unityFiles, deleteUnityFiles, expectDeletes) => {
+const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) => {
 
     const unityFiles = opts.unity_package_files || []
     const deleteUnityFiles = opts.unity_package_delete_files || []
@@ -216,9 +233,7 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) =
 
     const pkgSrcRoot = path.join(pkgPath, 'Runtime', pkgName)
 
-    const pkgChanges = unityFiles.map(async f =>
-        await fs.readFile(path.join(pkgSrcRoot, f.name), 'utf8')
-    )
+    const pkgChanges = []
 
     if(deleteUnityFiles) {
         deleteUnityFiles.forEach(f => {
@@ -235,6 +250,10 @@ const writeFilesToUnityThenCopy2Pkg = async (pkgPath, pkgName, copy2Src, opts) =
                 .catch(e => reject(e))
             }))
         })
+    }
+
+    if(pkgChanges.length == 0) {
+      return
     }
 
     await Promise.all(pkgChanges)
