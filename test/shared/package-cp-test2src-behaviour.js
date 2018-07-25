@@ -155,7 +155,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         }
     })
 
-    it.only('copies README and associated files from unity install back to root of package', async function() {
+    it('copies README and associated files from unity install back to root of package', async function() {
 
         this.timeout(10000)
 
