@@ -59,7 +59,7 @@ const runPkgCmdAsync = async (cmd, pkgPath) => {
             if (code !== 0 || signal) {
                 return reject(new Error(`${cmd} failed with code ${code} and signal ${signal}`))
             }
-            return resolve()
+            return resolve(null)
         })
     })
 

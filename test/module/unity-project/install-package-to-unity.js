@@ -229,10 +229,15 @@ describe("unityProject.installPackageToUnity", () => {
         `unity-project package.json should have a script for overwrite2clone at ${pkgInfo.test_project_path}`
       ).to.be.true
 
-      await h.runPkgCmdAsync(
-        `npm run overwrite2clone ${installPkgName}`,
-        pkgInfo.test_project_path
-      )
+      try {
+        await h.runPkgCmdAsync(
+          `npm run overwrite2clone ${installPkgName}`,
+          pkgInfo.test_project_path
+        )
+      }
+      catch(err) {
+        console.error(`error running overwrite2clone: ${err.message}\n${err.stack}`)
+      }
 
 
     })
