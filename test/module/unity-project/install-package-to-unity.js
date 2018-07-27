@@ -189,7 +189,7 @@ describe("unityProject.installPackageToUnity", () => {
       expect(
         await fs.exists(readMePath),
         `the package README should be installed to unity at ${readMePath}`
-      ).to.equal(true)
+      ).to.be.true
 
       const readMeFilesPath = path.join(
         pkgInfo.test_package_expected_unity_install_path,
@@ -199,9 +199,41 @@ describe("unityProject.installPackageToUnity", () => {
       expect(
         await fs.exists(readMeFilesPath) && (await fs.lstat(readMeFilesPath)).isDirectory(),
         `the package readmefiles should be installed to unity at ${readMeFilesPath}`
-      ).to.equal(true)
+      ).to.be.true
 
     })
 
+    it("adds an npm script to the unity project to copy editted packages back to a clone", async function() {
+      this.timeout(300000)
 
+      const installPkgName = "defines"
+
+      const pkgInfo = await h.npmInstallPackageWithIgnoreScripts(installPkgName, "beatthat")
+
+      await unpm.unityProject.installPackageToUnity(pkgInfo.test_package_name, {
+        project_root: pkgInfo.test_project_path,
+        verbose: VERBOSE
+      })
+
+      console.log(`look for package at ${pkgInfo.test_project_path}`)
+
+      const unityPkg = await unpm.readPackage(pkgInfo.test_project_path)
+
+
+      console.log(`got ${typeof(unityPkg)}`)
+
+      console.log(`got json ${JSON.stringify(unityPkg, null, 2)}`)
+
+      expect(
+        unityPkg.scripts && typeof(unityPkg.scripts.overwrite2clone) === 'string',
+        `unity-project package.json should have a script for overwrite2clone at ${pkgInfo.test_project_path}`
+      ).to.be.true
+
+      await h.runPkgCmdAsync(
+        `npm run overwrite2clone ${installPkgName}`,
+        pkgInfo.test_project_path
+      )
+
+
+    })
 });
