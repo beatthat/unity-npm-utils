@@ -68,21 +68,41 @@ node ./node_modules/unity-npm-utils/bin/unpm upt -v
 
 When the commands above complete, your package.json should have some scripts and directories should be set up for source and tests.
 
-#### Edit your code and samples in Unity
+#### Edit your package code and Samples in a Unity test project
 
-You can work on your package code and Samples
+Unity NPM Utils provides tools to let you work on your package code and Samples in a Unity 'test' project and then sync the changes back to their respective folders for commit.
 
-There is a placeholder text file under `Runtime/${your-package-name}` so you can test the unity-install process right away as follows:
+Run the command below to install your project to a test unity project:
 
 ```
 npm run test-install
 ```
 
-Your package should now be installed to the (unity project) under `./test`. Open up the test folder in Unity and find that placeholder text file under Plugins.
+Now launch Unity and open the generated project in your package folder under `./test`. The contents from your package `Runtime/${your_package_name}` should be copied to `Plugins/packages` and the contents from you package `Samples` should be copied to `Samples/packages`.
 
-Once you see the placeholder source file installed. Close unity, go back to your source directory and add you real (C#) source files (you can delete the placeholder text file.)
+#### Sync changes made in the Unity test project back to your package
 
-When you're done run `npm run install-test` and check the install by opening the test directory in Unity again. Why do we keep testing the install and opening it in Unity? Because that's the easiest way to see if our source code and package setup are valid, specifically we need to check if our source code has any dependencies (on other unity packages) that weren't specified. If that turns out to be the case, you'll have to include that dependency in package.json (e.g. `npm install --save [whatever package we're missing]`)
+When you're done editing Samples etc. in the Unity test project, you must sync those changes back to their folders in the package root or they will be lost.
+
+To sync run one of the commands below from the package root (not the test folder)
+
+```npm run overwrite2src```
+
+...to OVERWRITE (will delete`Runtime` and `Samples` before copy)
+
+...or...
+
+```npm run copy2src```
+
+...to copy WITHOUT deleting files on the package side
+
+#### Create a package out of code already living in your Unity project
+
+TODO: document this
+
+#### Sync changes made to a package in your Unity project back to the package, e.g. a git clone
+
+TODO: document this
 
 ## How to test the software
 
