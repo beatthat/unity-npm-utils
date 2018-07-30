@@ -42,6 +42,7 @@
         "decompress": "^4.2.0",
         "delay": "^2.0.0",
         "download-git-repo": "^1.0.2",
+        "doxygen-unity-package": "github:beatthat/doxygen-unity-package",
         "es6-promisify": "^5.0.0",
         "fs-extra": "^6.0.1",
         "git-credential-helper": "0.0.1",
