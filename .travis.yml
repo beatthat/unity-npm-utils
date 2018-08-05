@@ -3,6 +3,6 @@ os: osx
 node_js:
   - "10.1.0"
 before_install:
-  - git config credential.helper "store --file=.git/credentials"; echo "https://${GITHUB_OAUTH_TOKEN}:@github.com" > .git/credentials 2>/dev/null
+  - git config credential.helper "store --file=.git/credentials"; echo "https://beatthat:${GITHUB_OAUTH_TOKEN}@github.com" > .git/credentials 2>/dev/null
   - git config --global user.email "larrykirschner@gmail.com"
   - git config --global user.name "beatthat"
