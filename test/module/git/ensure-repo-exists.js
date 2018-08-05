@@ -24,7 +24,7 @@ const findGitAccount = async () => {
     const creds = await gchFill('https://github.com');
 
     if (!creds || !creds.username || !creds.password) {
-        throw new Error(`github account credentials required for this test: ${creds}`);
+        throw new Error(`github account credentials required for this test: ${JSON.stringify(creds)}`);
     }
 
     return creds;
