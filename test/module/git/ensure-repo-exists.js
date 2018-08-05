@@ -59,7 +59,7 @@ describe("ensureRepoExists", () => {
         }
     })
 
-    it("creates a github repo if it does not exist", async function() {
+    it.only("creates a github repo if it does not exist", async function() {
         this.timeout(30000);
 
         mlog.log(`attempting to create test repo: ${repoName} which should then be auto deleted by test cleanup.`)

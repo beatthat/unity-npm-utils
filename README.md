@@ -1,5 +1,7 @@
 # Unity NPM Utils
 
+[![Build Status](https://travis-ci.com/beatthat/unity-npm-utils.svg?branch=master)](https://travis-ci.com/beatthat/unity-npm-utils)
+
 ## Create, install, and share interdependent Unity packages
 
 The Unity Asset Store is a great resource but as a package manager, it has limitations. Notably, it provides no mechanism for one package to declare dependencies on another.
