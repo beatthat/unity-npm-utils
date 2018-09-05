@@ -108,7 +108,7 @@ TODO: document this
 
 ## How to test the software
 
-If you're making changes to unity-npm-utils, use the extensive sweet of BDD tests ```npm run test```. These tests take some time to run because many of them are doing npm installs and other downloads to mimic real-world scenarios.
+If you're making changes to unity-npm-utils, use the extensive suite of BDD tests ```npm run test```. These tests take some time to run because many of them are doing npm installs and other downloads to mimic real-world scenarios.
 
 ## Known issues
 
