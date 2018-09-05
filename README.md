@@ -80,7 +80,7 @@ Run the command below to install your project to a test unity project:
 npm run test-install
 ```
 
-Now launch Unity and open the generated project in your package folder under `./test`. The contents from your package `Runtime/${your_package_name}` should be copied to `Plugins/packages` and the contents from you package `Samples` should be copied to `Samples/packages`.
+Now launch Unity and open the generated project in your package folder under `./test`. The contents from your package `Runtime/${your_package_name}` should be copied to `Plugins/packages` and the contents from your package `Samples` should be copied to `Samples/packages`.
 
 #### Sync changes made in the Unity test project back to your package
 
