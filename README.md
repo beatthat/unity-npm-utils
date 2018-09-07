@@ -32,6 +32,8 @@ If anything, breaking out your code into packages now should make it much easier
 
 #### Your unity project needs a package.json
 
+The next few sections below will take you through the process of installing an package to a Unity project via npm. If you prefer video tutorials, this [video](https://youtu.be/Uss_yOiLNw8) goes through more or less the same process.
+
 First things first: we're using npm here, so your unity project needs a package.json. If you don't yet have a package.json in your unity project, you can use npm init
 
 `cd [your unity project root] && npm init`
