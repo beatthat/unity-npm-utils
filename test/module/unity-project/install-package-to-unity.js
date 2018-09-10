@@ -193,7 +193,7 @@ describe("unityProject.installPackageToUnity", () => {
 
       const readMeFilesPath = path.join(
         pkgInfo.test_package_expected_unity_install_path,
-        'readmefiles'
+        'READMEfiles'
       )
 
       expect(
