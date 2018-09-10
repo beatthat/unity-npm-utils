@@ -1,7 +1,7 @@
 {
     "name": "unity-npm-utils",
     "scope": "beatthat",
-    "version": "1.0.80",
+    "version": "1.0.81",
     "description": "utils for using npm as a package manager for unity",
     "repository": {
         "type": "git",
