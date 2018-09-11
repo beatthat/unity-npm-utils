@@ -8,7 +8,7 @@ The Unity Asset Store is a great resource but as a package manager, it has limit
 
 A practical effect of this is that the Unity ecosystem doesn't create and share small, single-task focused, interdependent code modules the way other language/platform communities do, and so the Unity community misses out on that engine of innovation and progress.
 
-unity-npm-utils leverages the mature and powerful Node JS package manager, npm, as a basis to provide Unity-friendly tools for creating, integrating, editing and sharing Unity packages.
+`unity-npm-utils` leverages the mature and powerful Node JS package manager, npm, as a basis to provide Unity-friendly tools for creating, integrating, editing and sharing Unity packages.
 
 #### Why do I need this when Unity has released their own package manager?
 
