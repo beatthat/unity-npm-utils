@@ -75,7 +75,7 @@ const runPkgCmdAsync = async (cmd, pkgPath) => {
  * @param {function(err)} callback
  */
 const runPkgCmd = (cmd, pkgPath, callback) => {
-
+    console.log(`runPkgCmd cmd=${cmd} pkgPath=${pkgPath}...`)
     const promise = new Promise((resolve, reject) => {
         const cmdProc = spawn(cmd, {
             shell: true,
@@ -201,7 +201,7 @@ const installLocalUnpmToPackage = async (pkgPath, opts) => {
 
   await runPkgCmdAsync('npm pack', unpmRoot)
 
-  const unpmTarName = `${unpmPkg.name}-${unpmPkg.version}.tgz`
+  const unpmTarName = `${unpmPkg.name.replace('@', '').replace('/', '-')}-${unpmPkg.version}.tgz`
   const unpmSourcePath = path.join(unpmRoot, unpmTarName)
   const unpmTargetDir = path.join(pkgPath, 'localpackage')
 
@@ -290,7 +290,7 @@ const npmInstallPackageWithIgnoreScripts = async function(pkgName, pkgScope)
 {
     const unpmPkg = await unpm.readPackage(appRoot)
 
-    expect(unpmPkg.name).to.equal('unity-npm-utils')
+    expect(unpmPkg.name).to.equal('@beatthat/unity-npm-utils')
 
     //////////////////////////////////////////////////////////////////////
     // first let's create a test package with unity-npm-utils installed...
@@ -306,7 +306,7 @@ const npmInstallPackageWithIgnoreScripts = async function(pkgName, pkgScope)
     var testProj = await unpm.readPackage(testProjPath)
 
     expect(
-      testProj.dependencies['unity-npm-utils']
+      testProj.dependencies['@beatthat/unity-npm-utils']
     ).to.exist
 
     ////////////////////////////////////////////////////////////////////

@@ -25,7 +25,7 @@ describe("git.cloneOrPullInstallPackage - clones or updates an external git clon
         var testProj = await unpm.readPackage(testProjPath)
 
         expect(
-          testProj.dependencies['unity-npm-utils']
+          testProj.dependencies['@beatthat/unity-npm-utils']
         ).to.exist
 
         const pkgToCloneFullName = "beatthat/properties"

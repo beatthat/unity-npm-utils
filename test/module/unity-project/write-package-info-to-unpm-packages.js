@@ -33,7 +33,7 @@ describe("unityProject.writePackageInfoToUnpmPackages", () => {
       var testProj = await unpm.readPackage(testProjPath)
 
       expect(
-        testProj.dependencies['unity-npm-utils']
+        testProj.dependencies['@beatthat/unity-npm-utils']
       ).to.exist
 
       ////////////////////////////////////////////////////////////////////

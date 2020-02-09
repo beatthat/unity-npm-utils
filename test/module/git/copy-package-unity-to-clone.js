@@ -24,7 +24,7 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
         var testProj = await unpm.readPackage(testProjPath)
 
         expect(
-          testProj.dependencies['unity-npm-utils']
+          testProj.dependencies['@beatthat/unity-npm-utils']
         ).to.exist
 
         const pkgToClone = "property-interfaces"
@@ -91,7 +91,7 @@ describe("git.copyPackageUnityToClone - copies changes made in installed unity p
         var testProj = await unpm.readPackage(testProjPath)
 
         expect(
-          testProj.dependencies['unity-npm-utils']
+          testProj.dependencies['@beatthat/unity-npm-utils']
         ).to.exist
 
         const pkgToClone = "property-interfaces"
