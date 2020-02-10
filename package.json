@@ -29,7 +29,8 @@
         "test:unityproject:install": "export pkg_file_name=$(echo ${npm_package_name} | sed -e 's/@//' | sed -e 's///-/') && npm pack && cp ${pkg_file_name}-${npm_package_version}.tgz ${pkg_file_name}-latest.tgz && cd test_unity_project && npm run clean && npm install",
         "clean": "rm -f *.tgz *.log *.swp",
         "version": "git add -A",
-        "postversion": "git push && git push --tags && npm run clean"
+        "postversion": "git push && git push --tags && npm run clean",
+        "publish": "npm login --registry=registry=https://npm.pkg.github.com --scope=@beatthat && npm publish"
     },
     "dependencies": {
         "app-root-path": "^2.1.0",
