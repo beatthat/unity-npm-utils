@@ -6,7 +6,7 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
-describe.only("unityProject.writePackageInfoToUnpmPackages", () => {
+describe("unityProject.writePackageInfoToUnpmPackages", () => {
 
     /**
      * test that writePackageInfoToUnpmLocal can take an arbitrary installed package

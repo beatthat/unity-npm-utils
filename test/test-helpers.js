@@ -75,7 +75,7 @@ const runPkgCmdAsync = async (cmd, pkgPath) => {
  * @param {function(err)} callback
  */
 const runPkgCmd = (cmd, pkgPath, callback) => {
-    console.log(`runPkgCmd cmd=${cmd} pkgPath=${pkgPath}...`)
+    mlog.pending(`runPkgCmd cmd=${cmd} pkgPath=${pkgPath}...`)
     const promise = new Promise((resolve, reject) => {
         const cmdProc = spawn(cmd, {
             shell: true,
@@ -194,6 +194,7 @@ const ensureTestPackage = async (pkgPath) => {
  * @param {string} pkgPath - will install unity-npm-utils here.
  */
 const installLocalUnpmToPackage = async (pkgPath, opts) => {
+  opts = opts || {}
   pkgPath = await ensureTestPackage(pkgPath)
   const unpmRoot = appRoot
 
@@ -211,8 +212,47 @@ const installLocalUnpmToPackage = async (pkgPath, opts) => {
 
   await fs.rename(unpmSourcePath, unpmTargetPath)
 
+  const localUnpmPath = path.join(pkgPath, 'localpackage', unpmTarName)
   // TODO: this is still not right with respect to test-install script in package. Need to change that script to bundle unity-unpm-utils instead of pack?
   await runPkgCmdAsync(`npm install file:${path.join('localpackage', unpmTarName)}`, pkgPath)
+
+  // we have a local copy of unpm installed to the main pkg,
+  // which we need to testing unpublished code but it causes problems:
+  // specifically, when we run `npm test-install` it will try to `npm pack`
+  // and the resulting tgz will not actually be installable 
+  // (because the local dependency isn't handled properly)
+  // So as a patch, leave the code installed by rewrite just
+  // the dependency paths in the package.json of both the main pkg
+  // and the test pkg (if exists)
+
+  if(opts.adjustLocalDependenciesForTestInstall) {
+    // in the main pkg, just remove the (already installed) unpm dependency
+    // to make it so it won't get 'pack'ed
+    unpm.transformPackage({
+        package_path: pkgPath,
+        transform: (mainPkg, transformCB) => {
+                if(mainPkg.dependencies && mainPkg.dependencies['@beatthat/unity-npm-utils']) {
+                    delete mainPkg.dependencies['@beatthat/unity-npm-utils']
+                }
+                transformCB(null, mainPkg)
+            }
+        })
+
+
+    // in the `test` pkg, change the dependency to the local one
+    const testPkgPath = path.join(pkgPath, 'test')
+    if(fs.existsSync(testPkgPath)) {
+        unpm.transformPackage({
+            package_path: testPkgPath,
+            transform: (testPkg, transformCB) => {
+                    if(testPkg.dependencies && testPkg.dependencies['@beatthat/unity-npm-utils']) {
+                        testPkg.dependencies['@beatthat/unity-npm-utils'] = localUnpmPath
+                    }
+                    transformCB(null, testPkg)
+                }
+            })
+    }
+  }
   return pkgPath
 }
 
