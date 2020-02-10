@@ -1,7 +1,7 @@
 {
     "name": "@beatthat/unity-npm-utils",
     "scope": "beatthat",
-    "version": "1.0.85",
+    "version": "1.0.86",
     "description": "utils for using npm as a package manager for unity",
     "repository": {
         "type": "git",
@@ -30,7 +30,7 @@
         "clean": "rm -f *.tgz *.log *.swp",
         "version": "git add -A",
         "postversion": "git push && git push --tags && npm run clean",
-        "publish": "npm login --registry=registry=https://npm.pkg.github.com --scope=@beatthat && npm publish"
+        "login": "npm login --registry=https://npm.pkg.github.com --scope=@beatthat"
     },
     "dependencies": {
         "app-root-path": "^2.1.0",
