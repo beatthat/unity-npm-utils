@@ -6,7 +6,7 @@ const h = require('../../test-helpers.js')
 const unpm = require('../../../lib/unity-npm-utils')
 const appRoot = require('app-root-path').path
 
-describe("unityProject.writePackageInfoToUnpmPackages", () => {
+describe.only("unityProject.writePackageInfoToUnpmPackages", () => {
 
     /**
      * test that writePackageInfoToUnpmLocal can take an arbitrary installed package
@@ -17,7 +17,7 @@ describe("unityProject.writePackageInfoToUnpmPackages", () => {
 
       const unpmPkg = await unpm.readPackage(appRoot)
 
-      expect(unpmPkg.name).to.equal('unity-npm-utils')
+      expect(unpmPkg.name).to.equal('@beatthat/unity-npm-utils')
 
       //////////////////////////////////////////////////////////////////////
       // first let's create a test package with unity-npm-utils installed...
