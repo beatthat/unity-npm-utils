@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{github.ref}}
-      - run: export v="${{github.ref}}" && echo "${v##.*/}"
+      - run: export v="${{github.ref}}" && echo "${v##*/}"
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
