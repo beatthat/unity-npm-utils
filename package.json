@@ -1,7 +1,7 @@
 {
-    "name": "unity-npm-utils",
+    "name": "@beatthat/unity-npm-utils",
     "scope": "beatthat",
-    "version": "1.0.84",
+    "version": "1.1.0",
     "description": "utils for using npm as a package manager for unity",
     "repository": {
         "type": "git",
@@ -26,10 +26,9 @@
     "scripts": {
         "test": "./node_modules/.bin/mocha --full-trace --recursive --reporter spec",
         "pretest:unityproject:install": "rm -f *.tgz",
-        "test:unityproject:install": "npm pack && cp ${npm_package_name}-${npm_package_version}.tgz ${npm_package_name}-latest.tgz && cd test_unity_project && npm run clean && npm install",
+        "test:unityproject:install": "export pkg_file_name=$(echo ${npm_package_name} | sed -e 's/@//' | sed -e 's///-/') && npm pack && cp ${pkg_file_name}-${npm_package_version}.tgz ${pkg_file_name}-latest.tgz && cd test_unity_project && npm run clean && npm install",
         "clean": "rm -f *.tgz *.log *.swp",
-        "version": "git add -A",
-        "postversion": "git push && git push --tags && npm run clean"
+        "login": "npm login --registry=https://npm.pkg.github.com --scope=@beatthat"
     },
     "dependencies": {
         "app-root-path": "^2.1.0",

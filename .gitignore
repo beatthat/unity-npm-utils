@@ -39,6 +39,4 @@ sysinfo.txt
 node_modules
 
 *.log
-
-package-lock.json
 .DS_Store

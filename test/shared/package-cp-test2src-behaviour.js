@@ -69,7 +69,7 @@ const copy2SrcBehaviour = (copy2Src, options) => {
         await unpm.unityPackage.addSrcFiles(pkgPath, srcFilesBefore)
         await unpm.unityPackage.addSampleFiles(pkgPath, sampleFilesBefore)
 
-        await h.installLocalUnpmToPackage(pkgPath)
+        await h.installLocalUnpmToPackage(pkgPath, {adjustLocalDependenciesForTestInstall: true})
 
         await h.runPkgCmd('npm run test-install', pkgPath)
     })
