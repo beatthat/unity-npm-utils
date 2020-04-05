@@ -29,9 +29,7 @@ describe("'npm run test-install' - installs a package to its own 'test' Unity pr
 
         await unpm.unityPackage.addSrcFiles(pkgPath, srcFiles)
 
-        await h.installLocalUnpmToPackage(pkgPath, {
-            adjustLocalDependenciesForTestInstall: true
-        })
+        await h.installLocalUnpmToPackage(pkgPath)
 
         await h.runPkgCmd('npm run test-install', pkgPath)
     });

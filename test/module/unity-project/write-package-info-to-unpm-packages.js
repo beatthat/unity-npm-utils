@@ -17,7 +17,7 @@ describe("unityProject.writePackageInfoToUnpmPackages", () => {
 
       const unpmPkg = await unpm.readPackage(appRoot)
 
-      expect(unpmPkg.name).to.equal('@beatthat/unity-npm-utils')
+      expect(unpmPkg.name).to.equal('unity-npm-utils')
 
       //////////////////////////////////////////////////////////////////////
       // first let's create a test package with unity-npm-utils installed...
@@ -33,7 +33,7 @@ describe("unityProject.writePackageInfoToUnpmPackages", () => {
       var testProj = await unpm.readPackage(testProjPath)
 
       expect(
-        testProj.dependencies['@beatthat/unity-npm-utils']
+        testProj.dependencies['unity-npm-utils']
       ).to.exist
 
       ////////////////////////////////////////////////////////////////////

@@ -29,7 +29,7 @@ describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./nod
             verbose: VERBOSE
         }
 
-        await h.runPkgCmd('npm init --force && echo "@beatthat:registry=https://npm.pkg.github.com" > .npmrc', pkgPath)
+        await h.runPkgCmd('npm init --force', pkgPath)
 
         await unpm.transformPackage({
             package_path: pkgPath,
@@ -42,7 +42,7 @@ describe(`'npm init && npm install --save beatthat/unity-npm-utils && node ./nod
 
     updateTemplateBehaviour({
         update_template_function: (opts) => {
-            return h.runPkgCmd('npm install --save @beatthat/unity-npm-utils && npx unpm upt -v', opts.package_path);
+            return h.runPkgCmd('npm install --save beatthat/unity-npm-utils && node ./node_modules/unity-npm-utils/bin/unpm upt -v', opts.package_path);
         }
     })
 

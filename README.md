@@ -66,8 +66,7 @@ Create a new directory with the same you want to give your package and then exec
 
 ```
 npm init --force && \
-echo "registry=https://npm.pkg.github.com" >> .npmrc && \
-npm install --save @beatthat/unity-npm-utils && \
+npm install --save beatthat/unity-npm-utils && \
 node ./node_modules/unity-npm-utils/bin/unpm upt -v
 ```
 
